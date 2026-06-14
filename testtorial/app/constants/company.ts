@@ -1,0 +1,7 @@
+export const COMPANY_NAME = 'BEC'
+export const COMPANY_FULL_NAME = 'Banyas Electronics Co.'
+export const COMPANY_TAGLINE = 'حلول إلكترونية وتقنية متكاملة'
+export const COMPANY_EMAIL = 'info@bec-electronics.com'
+export const COMPANY_PHONE = '+970 59 000 0000'
+export const COMPANY_WHATSAPP = '970590000000'
+export const COMPANY_ADDRESS = 'فلسطين - نابلس - شارع الإلكترونيات'

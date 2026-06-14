@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none">
+  <defs>
+    <linearGradient id="banyas-gradient" x1="0" y1="0" x2="120" y2="120" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#2563EB"/>
+      <stop offset="1" stop-color="#1E3A8A"/>
+    </linearGradient>
+  </defs>
+  <rect width="120" height="120" rx="28" fill="url(#banyas-gradient)"/>
+  <path d="M38 34h22c14.9 0 24 8.4 24 21.5S74.9 77 60 77H52v19H38V34zm14 14v16h7.5c6.2 0 10-3.4 10-8.5S65.7 48 59.5 48H52z" fill="#fff"/>
+</svg>
