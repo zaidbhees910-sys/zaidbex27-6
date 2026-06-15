@@ -1,58 +1,51 @@
 // app/products/page.tsx
-
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
-// جميع المنتجات مع فئات محدثة
-const allProducts = [
-  // حواسيب
-  { id: 1, name: 'لابتوبات', image: '/products/laptops.jpg', description: 'أجهزة كمبيوتر محمولة عالية الأداء', category: 'حواسيب' },
-  { id: 7, name: 'كمبيوتر صغير', image: '/products/mini-pc.jpg', description: 'كمبيوتر بحجم صغير وأداء قوي', category: 'حواسيب' },
-  
-  // أجهزة لوحية
-  { id: 2, name: 'ايباد', image: '/products/ipad.jpg', description: 'أجهزة لوحية للإبداع والإنتاجية', category: 'أجهزة لوحية' },
-  
-  // سماعات (فئة مستقلة)
-  { id: 3, name: 'سماعات', image: '/products/headphones.jpg', description: 'سماعات عالية الجودة بصوت نقي', category: 'سماعات' },
-  
-  // شاشات
-  { id: 4, name: 'شاشات', image: '/products/monitors.jpg', description: 'شاشات بدقة عالية وألوان زاهية', category: 'شاشات' },
-  
-  // طابعات
-  { id: 5, name: 'طابعة', image: '/products/printer.jpg', description: 'طابعات متعددة الوظائف', category: 'طابعات' },
-  { id: 9, name: 'ماكنات تصوير أوراق', image: '/products/copier.jpg', description: 'ماكنات تصوير متعددة الوظائف', category: 'طابعات' },
-  
-  // حبر (فئة مستقلة)
-  { id: 6, name: 'حبر', image: '/products/ink.jpg', description: 'أحبار أصلية للطباعة بجودة عالية', category: 'حبر' },
-  
-  // ساعات
-  { id: 8, name: 'ساعات يد حديثة', image: '/products/watch.jpg', description: 'ساعات ذكية متطورة بتقنيات حديثة', category: 'ساعات' },
-];
+interface Product {
+  id: number;
+  name: string;
+  category: string;
+  description: string;
+  price: number;
+  image: string;
+  specifications?: string;
+}
 
 export default function ProductsPage() {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('الكل');
 
-  // الفئات المتاحة (مرتبة ومنطقية)
-  const categories = [
-    'الكل',
-    'حواسيب',
-    'أجهزة لوحية',
-    'سماعات',
-    'شاشات',
-    'طابعات',
-    'حبر',
-    'ساعات'
-  ];
+  useEffect(() => {
+    fetchProducts();
+  }, []);
 
-  // فلترة المنتجات
-  const filteredProducts = allProducts.filter(product => {
+  const fetchProducts = async () => {
+    const res = await fetch('/api?action=getProducts');
+    const data = await res.json();
+    setProducts(data);
+    setLoading(false);
+  };
+
+  const categories = ['الكل', ...new Set(products.map(p => p.category))];
+
+  const filteredProducts = products.filter(product => {
     const matchesSearch = product.name.includes(searchTerm) || product.description.includes(searchTerm);
     const matchesCategory = selectedCategory === 'الكل' || product.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-gray-500 text-lg">جاري تحميل المنتجات...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4">
@@ -117,37 +110,40 @@ export default function ProductsPage() {
         </div>
 
         {/* عرض المنتجات */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filteredProducts.map((product) => (
-            <div key={product.id} className="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-              <div className="h-48 bg-gray-100 flex items-center justify-center p-4">
-                <img 
-                  src={product.image} 
-                  alt={product.name}
-                  className="h-32 object-contain"
-                />
-              </div>
-              <div className="p-4">
-                <div className="flex justify-between items-start mb-2">
-                  <h3 className="text-lg font-bold text-gray-900">{product.name}</h3>
-                  <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">{product.category}</span>
-                </div>
-                <p className="text-gray-600 text-sm mb-4 line-clamp-2">{product.description}</p>
-                <Link 
-                  href={`/${product.id}`}
-                  className="block w-full text-center px-4 py-2 border-2 border-blue-600 text-blue-600 font-semibold rounded-full hover:bg-blue-600 hover:text-white transition-all duration-300"
-                >
-                  عرض التفاصيل
-                </Link>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* إذا لم يتم العثور على منتجات */}
-        {filteredProducts.length === 0 && (
+        {filteredProducts.length === 0 ? (
           <div className="text-center py-12">
             <p className="text-gray-500 text-lg">لا توجد منتجات تطابق بحثك</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {filteredProducts.map((product) => (
+              <div key={product.id} className="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                <div className="h-48 bg-gray-100 flex items-center justify-center p-4">
+                  <img 
+                    src={product.image} 
+                    alt={product.name}
+                    className="h-32 object-contain"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = 'https://placehold.co/400x400?text=صورة+غير+موجودة';
+                    }}
+                  />
+                </div>
+                <div className="p-4">
+                  <div className="flex justify-between items-start mb-2">
+                    <h3 className="text-lg font-bold text-gray-900">{product.name}</h3>
+                    <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">{product.category}</span>
+                  </div>
+                  <p className="text-gray-600 text-sm mb-2 line-clamp-2">{product.description}</p>
+                  <p className="text-blue-600 font-bold text-lg mb-3">{product.price} ₪</p>
+                  <Link 
+                    href={`/${product.id}`}
+                    className="block w-full text-center px-4 py-2 border-2 border-blue-600 text-blue-600 font-semibold rounded-full hover:bg-blue-600 hover:text-white transition-all duration-300"
+                  >
+                    عرض التفاصيل
+                  </Link>
+                </div>
+              </div>
+            ))}
           </div>
         )}
       </div>

@@ -1,25 +1,21 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Logo from './components/Logo';
 import Navbar from './components/Navbar';
 import { COMPANY_NAME } from './constants/company';
 import Link from 'next/link';
 
-// جميع المنتجات
-const allProducts = [
-  { id: 1, name: 'لابتوبات', image: '/products/laptops.jpg', description: 'أجهزة كمبيوتر محمولة عالية الأداء', category: 'لابتوبات' },
-  { id: 2, name: 'ايباد', image: '/products/ipad.jpg', description: 'أجهزة لوحية للإبداع والإنتاجية', category: 'أجهزة لوحية' },
-  { id: 3, name: 'سماعات', image: '/products/headphones.jpg', description: 'سماعات عالية الجودة بصوت نقي', category: 'ملحقات' },
-  { id: 4, name: 'شاشات', image: '/products/monitors.jpg', description: 'شاشات بدقة عالية وألوان زاهية', category: 'شاشات' },
-  { id: 5, name: 'طابعة', image: '/products/printer.jpg', description: 'طابعات متعددة الوظائف', category: 'طابعات' },
-  { id: 6, name: 'حبر', image: '/products/ink.jpg', description: 'أحبار أصلية للطباعة بجودة عالية', category: 'ملحقات' },
-  { id: 7, name: 'كمبيوتر صغير', image: '/products/mini-pc.jpg', description: 'كمبيوتر بحجم صغير وأداء قوي', category: 'حواسيب' },
-  { id: 8, name: 'ساعات يد حديثة', image: '/products/watch.jpg', description: 'ساعات ذكية متطورة بتقنيات حديثة', category: 'ساعات' },
-  { id: 9, name: 'ماكنات تصوير أوراق', image: '/products/copier.jpg', description: 'ماكنات تصوير متعددة الوظائف', category: 'طابعات' },
-];
+interface Product {
+  id: number;
+  name: string;
+  category: string;
+  description: string;
+  image: string;
+  specifications?: string;
+}
 
-// Services data
+// Services data (يبقى كما هو)
 const services = [
   { id: 1, name: 'توريد الأجهزة', icon: '📦', description: 'توريد جميع أنواع الأجهزة الإلكترونية بأحدث المواصفات' },
   { id: 2, name: 'الدعم الفني', icon: '🔧', description: 'فريق دعم فني متخصص لحل جميع المشاكل التقنية' },
@@ -29,33 +25,57 @@ const services = [
 ];
 
 export default function Home() {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // جلب المنتجات من قاعدة البيانات
+  useEffect(() => {
+    fetch('/api?action=getProducts')
+      .then(res => res.json())
+      .then(data => {
+        setProducts(data);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
+  }, []);
+
   // Carousel state - ننتقل منتج واحد في كل مرة
   const [currentIndex, setCurrentIndex] = useState(0);
-  const totalProducts = allProducts.length;
+  const totalProducts = products.length;
 
   // دوال التنقل - منتج واحد في كل مرة
   const goToNext = () => {
-    setCurrentIndex((prev) => (prev + 1) % totalProducts);
+    if (totalProducts > 0) {
+      setCurrentIndex((prev) => (prev + 1) % totalProducts);
+    }
   };
 
   const goToPrev = () => {
-    setCurrentIndex((prev) => (prev - 1 + totalProducts) % totalProducts);
+    if (totalProducts > 0) {
+      setCurrentIndex((prev) => (prev - 1 + totalProducts) % totalProducts);
+    }
   };
-
-  // المنتج الحالي
-  const currentProduct = allProducts[currentIndex];
 
   // حساب المنتجات المعروضة (المنتج الحالي + منتجين إضافيين للتأثير)
   const getVisibleProducts = () => {
+    if (products.length === 0) return [];
     const result = [];
     for (let i = -1; i <= 1; i++) {
       let index = (currentIndex + i + totalProducts) % totalProducts;
-      result.push({ ...allProducts[index], position: i });
+      result.push({ ...products[index], position: i });
     }
     return result;
   };
 
   const visibleProducts = getVisibleProducts();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-gray-500 text-lg">جاري تحميل المنتجات...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#F5F5F5] font-sans" dir="rtl">
@@ -227,7 +247,8 @@ export default function Home() {
             {/* السهم الأيسر */}
             <button
               onClick={goToPrev}
-              className="absolute -left-2 md:-left-4 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-transparent flex items-center justify-center transition-all duration-300 hover:scale-110 group"
+              disabled={products.length === 0}
+              className="absolute -left-2 md:-left-4 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-transparent flex items-center justify-center transition-all duration-300 hover:scale-110 group disabled:opacity-30"
             >
               <svg className="w-8 h-8 text-gray-400 group-hover:text-blue-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -237,7 +258,8 @@ export default function Home() {
             {/* السهم الأيمن */}
             <button
               onClick={goToNext}
-              className="absolute -right-2 md:-right-4 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-transparent flex items-center justify-center transition-all duration-300 hover:scale-110 group"
+              disabled={products.length === 0}
+              className="absolute -right-2 md:-right-4 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-transparent flex items-center justify-center transition-all duration-300 hover:scale-110 group disabled:opacity-30"
             >
               <svg className="w-8 h-8 text-gray-400 group-hover:text-blue-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -268,6 +290,9 @@ export default function Home() {
                             src={product.image} 
                             alt={product.name}
                             className="h-48 object-contain group-hover:scale-105 transition-transform duration-500"
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).src = 'https://placehold.co/400x400?text=صورة+غير+موجودة';
+                            }}
                           />
                         </div>
                         <div className="p-6">
@@ -292,26 +317,30 @@ export default function Home() {
           </div>
 
           {/* نقاط التنقل (Dots) */}
-          <div className="flex justify-center gap-2 mt-8">
-            {allProducts.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => setCurrentIndex(index)}
-                className={`transition-all duration-300 rounded-full ${
-                  currentIndex === index
-                    ? 'w-8 h-2 bg-blue-600'
-                    : 'w-2 h-2 bg-gray-300 hover:bg-gray-400'
-                }`}
-              />
-            ))}
-          </div>
+          {products.length > 0 && (
+            <>
+              <div className="flex justify-center gap-2 mt-8">
+                {products.map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setCurrentIndex(index)}
+                    className={`transition-all duration-300 rounded-full ${
+                      currentIndex === index
+                        ? 'w-8 h-2 bg-blue-600'
+                        : 'w-2 h-2 bg-gray-300 hover:bg-gray-400'
+                    }`}
+                  />
+                ))}
+              </div>
 
-          {/* عرض المنتج الحالي */}
-          <div className="text-center mt-4">
-            <p className="text-gray-400 text-sm">
-              {currentIndex + 1} / {totalProducts}
-            </p>
-          </div>
+              {/* عرض المنتج الحالي */}
+              <div className="text-center mt-4">
+                <p className="text-gray-400 text-sm">
+                  {currentIndex + 1} / {totalProducts}
+                </p>
+              </div>
+            </>
+          )}
 
           {/* زر عرض جميع المنتجات */}
           <div className="text-center mt-8">
