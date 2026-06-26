@@ -11,13 +11,12 @@ type LogoProps = {
 export default function Logo({
   showText = true,
   size = 'md',
-  variant = 'default'
 }: LogoProps) {
 
   const logoSize = {
-    sm: 'h-12 w-40',
-    md: 'h-16 w-56',
-    lg: 'h-24 w-80'
+    sm: 'h-10 w-36',
+    md: 'h-12 w-44',
+    lg: 'h-20 w-72',
   }
 
   return (
@@ -32,9 +31,7 @@ export default function Logo({
           alt={COMPANY_NAME}
           width={892}
           height={369}
-          className={`h-full w-full object-contain ${
-            variant === 'light' ? 'rounded-md bg-white px-2 py-1' : ''
-          }`}
+          className="h-full w-full object-contain"
           priority
         />
       )}
