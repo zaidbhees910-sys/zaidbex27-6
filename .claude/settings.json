@@ -1,0 +1,32 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:www.amazon.com)",
+      "WebFetch(domain:www.canon-europe.com)",
+      "WebFetch(domain:www.newegg.com)",
+      "WebFetch(domain:www.officedepot.com)",
+      "WebFetch(domain:icecat.us)",
+      "WebFetch(domain:www.epson.com.sa)",
+      "WebFetch(domain:www.staples.com)",
+      "WebFetch(domain:www.epson.eu)",
+      "WebFetch(domain:www.gsmarena.com)",
+      "WebFetch(domain:www.gigahertz.com.ph)",
+      "WebFetch(domain:joebz.com)",
+      "WebFetch(domain:www.printerland.co.za)",
+      "WebFetch(domain:www.brother-usa.com)",
+      "WebFetch(domain:e-catalog.com)",
+      "WebFetch(domain:www.hp.com)",
+      "WebFetch(domain:www.jumbo.ae)",
+      "WebFetch(domain:www.amazon.ae)",
+      "WebFetch(domain:www.canon-emirates.ae)",
+      "WebFetch(domain:www.stech.ink)",
+      "WebFetch(domain:www.virginmegastore.ae)",
+      "Bash(node -e ' *)",
+      "WebFetch(domain:www.microcenter.com)",
+      "Bash(npx tsc *)",
+      "Bash(npx next *)",
+      "Bash(netstat -ano)",
+      "Bash(findstr \":3000\")"
+    ]
+  }
+}
