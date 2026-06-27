@@ -134,12 +134,13 @@ function PromoBanner({ banner }: { banner: HpBanner }) {
 
 /* ─── Main Component ─────────────────────────────────────── */
 export default function Home() {
-  const [products,     setProducts]     = useState<Product[]>([]);
-  const [homepageData, setHomepageData] = useState<HomepageData>({ settings: {}, banners: [], categories: [] });
-  const [loading,      setLoading]      = useState(true);
-  const [showIntro,    setShowIntro]    = useState(true);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [cardsVisible, setCardsVisible] = useState(4);
+  const [products,        setProducts]        = useState<Product[]>([]);
+  const [homepageData,    setHomepageData]    = useState<HomepageData>({ settings: {}, banners: [], categories: [] });
+  const [loading,         setLoading]         = useState(true);
+  const [showIntro,       setShowIntro]       = useState(true);
+  const [currentIndex,    setCurrentIndex]    = useState(0);
+  const [cardsVisible,    setCardsVisible]    = useState(4);
+  const [carouselPaused,  setCarouselPaused]  = useState(false);
   const { tr, dir, lang } = useLanguage();
   const dragStartX = useRef<number | null>(null);
   const isDragging = useRef(false);
@@ -221,6 +222,13 @@ export default function Home() {
 
   useEffect(() => { setCurrentIndex(prev => Math.min(prev, maxIdx)); }, [maxIdx]);
 
+  /* Auto-scroll carousel every 4 s, pause on hover */
+  useEffect(() => {
+    if (carouselItems.length <= cardsVisible || carouselPaused || maxIdx === 0) return;
+    const id = setInterval(() => setCurrentIndex(p => p >= maxIdx ? 0 : p + 1), 4000);
+    return () => clearInterval(id);
+  }, [carouselItems.length, cardsVisible, maxIdx, carouselPaused]);
+
   const goNext = useCallback(() => setCurrentIndex(p => Math.min(p + 1, maxIdx)), [maxIdx]);
   const goPrev = useCallback(() => setCurrentIndex(p => Math.max(p - 1, 0)), []);
 
@@ -283,24 +291,23 @@ export default function Home() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 
               {/* Card 1 — Printing */}
-              <div className="group relative bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 flex flex-col">
-                {/* Image area */}
+              <div className="group relative bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 flex flex-col">
                 <div className="h-52 overflow-hidden relative">
-                  <img src="/assets/card-printing.png" alt="" className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  <img src="/assets/card-printing.png" alt="" className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </div>
-                {/* Text */}
                 <div className="flex flex-col flex-1 p-7">
                   <div className="flex items-center gap-3 mb-3">
-                    <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: 'linear-gradient(135deg,#eff6ff,#dbeafe)' }}>
+                    <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300" style={{ background: 'linear-gradient(135deg,#eff6ff,#dbeafe)' }}>
                       <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
                     </div>
                     <h3 className="text-lg font-black text-gray-900">حلول الطباعة للشركات</h3>
                   </div>
-                  <p className="text-gray-400 text-sm leading-relaxed mb-5 flex-1">
-                    عقود توريد وصيانة للطابعات وماكينات التصوير مع دعم فني وحلول للشركات
+                  <p className="text-gray-500 text-sm leading-relaxed mb-5 flex-1">
+                    أحبار BEC الأصلية، طابعات وماكينات تصوير مع عقود توريد وصيانة تضمن استمرارية عملك
                   </p>
                   <a href="#printer-card"
-                    className="inline-flex items-center gap-2 text-blue-600 font-bold text-sm hover:gap-3 transition-all duration-300">
+                    className="inline-flex items-center gap-2 text-blue-600 font-bold text-sm group-hover:gap-3 transition-all duration-300">
                     <svg className="w-4 h-4 rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7"/></svg>
                     اعرف المزيد
                   </a>
@@ -308,22 +315,23 @@ export default function Home() {
               </div>
 
               {/* Card 2 — Gaming */}
-              <div className="group relative bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 flex flex-col">
+              <div className="group relative bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 flex flex-col">
                 <div className="h-52 overflow-hidden relative">
-                  <img src="/assets/card-gaming.png" alt="" className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  <img src="/assets/card-gaming.png" alt="" className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </div>
                 <div className="flex flex-col flex-1 p-7">
                   <div className="flex items-center gap-3 mb-3">
-                    <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: 'linear-gradient(135deg,#faf5ff,#ede9fe)' }}>
+                    <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300" style={{ background: 'linear-gradient(135deg,#faf5ff,#ede9fe)' }}>
                       <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z"/></svg>
                     </div>
                     <h3 className="text-lg font-black text-gray-900">تجميعات Gaming</h3>
                   </div>
-                  <p className="text-gray-400 text-sm leading-relaxed mb-5 flex-1">
-                    اطلب جهازك بالمواصفات التي تريدها ونحن نقوم بالتجميع خلال فترة قصيرة بأفضل القطع المناسبة
+                  <p className="text-gray-500 text-sm leading-relaxed mb-5 flex-1">
+                    جهازك بمواصفاتك أنت — تجميع مخصص بأفضل القطع الأصلية وأسعار منافسة خلال فترة قصيرة
                   </p>
                   <Link href="/gaming-build"
-                    className="inline-flex items-center gap-2 text-purple-600 font-bold text-sm hover:gap-3 transition-all duration-300">
+                    className="inline-flex items-center gap-2 text-purple-600 font-bold text-sm group-hover:gap-3 transition-all duration-300">
                     <svg className="w-4 h-4 rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7"/></svg>
                     اطلب جهازك
                   </Link>
@@ -331,22 +339,23 @@ export default function Home() {
               </div>
 
               {/* Card 3 — Electronics */}
-              <div className="group relative bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 flex flex-col">
+              <div className="group relative bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 flex flex-col">
                 <div className="h-52 overflow-hidden relative">
-                  <img src="/assets/card-electronics.png" alt="" className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  <img src="/assets/card-electronics.png" alt="" className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </div>
                 <div className="flex flex-col flex-1 p-7">
                   <div className="flex items-center gap-3 mb-3">
-                    <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: 'linear-gradient(135deg,#ecfeff,#cffafe)' }}>
+                    <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300" style={{ background: 'linear-gradient(135deg,#ecfeff,#cffafe)' }}>
                       <svg className="w-5 h-5 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
                     </div>
-                    <h3 className="text-lg font-black text-gray-900">الأجهزة الإلكترونية</h3>
+                    <h3 className="text-lg font-black text-gray-900">الأجهزة والإكسسوارات</h3>
                   </div>
-                  <p className="text-gray-400 text-sm leading-relaxed mb-5 flex-1">
-                    لابتوبات، إكسسوارات وأجهزة أصلية من أفضل العلامات
+                  <p className="text-gray-500 text-sm leading-relaxed mb-5 flex-1">
+                    لابتوبات، سماعات، ساعات ذكية وإكسسوارات أصلية من Green Lion وLenovo وغيرها
                   </p>
-                  <Link href="/products?category=gaming&sort=price-desc"
-                    className="inline-flex items-center gap-2 text-cyan-600 font-bold text-sm hover:gap-3 transition-all duration-300">
+                  <Link href="/products"
+                    className="inline-flex items-center gap-2 text-cyan-600 font-bold text-sm group-hover:gap-3 transition-all duration-300">
                     <svg className="w-4 h-4 rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7"/></svg>
                     تصفح المنتجات
                   </Link>
@@ -712,10 +721,11 @@ duration-200
                 </button>
 
                 <div className="overflow-hidden cursor-grab active:cursor-grabbing"
+                  onMouseEnter={() => setCarouselPaused(true)}
+                  onMouseLeave={() => { setCarouselPaused(false); dragStartX.current = null; isDragging.current = false; }}
                   onMouseDown={e => handleDragStart(e.clientX)}
                   onMouseMove={() => { if (dragStartX.current !== null) isDragging.current = true; }}
                   onMouseUp={e => handleDragEnd(e.clientX)}
-                  onMouseLeave={() => { dragStartX.current = null; isDragging.current = false; }}
                   onTouchStart={e => handleDragStart(e.touches[0].clientX)}
                   onTouchEnd={e => handleDragEnd(e.changedTouches[0].clientX)}>
                   <div className="flex transition-transform duration-500 ease-in-out select-none" style={{ transform: `translateX(${translatePct}%)` }}>
@@ -832,21 +842,27 @@ duration-200
                 </div>
               </div>
               <div className="relative">
-                <div className="bg-gradient-to-br from-blue-600 to-blue-800 rounded-3xl p-8 text-white">
-                  <div className="grid grid-cols-2 gap-6 mb-8">
+                <div className="bg-gradient-to-br from-blue-600 to-blue-800 rounded-3xl p-8 text-white shadow-2xl" style={{ boxShadow:'0 24px 64px rgba(37,99,235,0.35)' }}>
+                  {/* Subtle inner glow */}
+                  <div className="absolute inset-0 rounded-3xl overflow-hidden pointer-events-none">
+                    <div style={{ position:'absolute', top:'-40%', right:'-20%', width:300, height:300, borderRadius:'50%', background:'radial-gradient(circle,rgba(255,255,255,0.08) 0%,transparent 65%)' }}/>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4 mb-8 relative">
                     {[
-                      ['7+',   'سنوات خبرة'],
-                      ['50+',  'عميل شركة'],
-                      ['∞',    'عقود طباعة مستمرة'],
-                      ['500+', 'منتج'],
-                    ].map(([val, lbl]) => (
-                      <div key={lbl} className="text-center">
-                        <div className="text-4xl font-bold">{val}</div>
-                        <div className="text-blue-200 text-sm mt-2">{lbl}</div>
+                      { val:'7+',   lbl:'سنوات خبرة',        icon:'🏆' },
+                      { val:'50+',  lbl:'عميل شركة',          icon:'🏢' },
+                      { val:'∞',    lbl:'عقود طباعة مستمرة', icon:'🖨️' },
+                      { val:'500+', lbl:'منتج',               icon:'📦' },
+                    ].map(({ val, lbl, icon }) => (
+                      <div key={lbl} className="text-center rounded-2xl py-5 px-3 hover:scale-105 transition-transform duration-300"
+                        style={{ background:'rgba(255,255,255,0.10)', backdropFilter:'blur(8px)', border:'1px solid rgba(255,255,255,0.15)' }}>
+                        <div className="text-2xl mb-1">{icon}</div>
+                        <div className="text-4xl font-black tracking-tight">{val}</div>
+                        <div className="text-blue-100 text-xs font-medium mt-1.5 leading-tight">{lbl}</div>
                       </div>
                     ))}
                   </div>
-                  <p className="text-blue-100 leading-relaxed text-center pt-4 border-t border-blue-500/30">{tr('stat_mission')}</p>
+                  <p className="text-blue-100 leading-relaxed text-center pt-4 border-t border-blue-400/30 relative">{tr('stat_mission')}</p>
                 </div>
               </div>
             </div>

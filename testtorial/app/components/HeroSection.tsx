@@ -3,6 +3,46 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 
+/* ─── Service Slides ──────────────────────────────────────── */
+const SLIDES = [
+  {
+    badge:  'حلول الطباعة للشركات',
+    h1:     'حلول',
+    h1Grad: 'طباعة احترافية',
+    h1Sub:  'للشركات والمكاتب',
+    desc:   'أحبار BEC الأصلية وطابعات HP وCanon وBrother مع عقود توريد وصيانة مستمرة',
+    cta1:   { label: '🖨️ حلول الطباعة', href: '#printer-card' },
+    cta2:   { label: '🎮 تجميع Gaming',  href: '/gaming-build' },
+  },
+  {
+    badge:  'تجميعات Gaming احترافية',
+    h1:     'ابني',
+    h1Grad: 'جهازك المثالي',
+    h1Sub:  'بالمواصفات التي تريدها',
+    desc:   'تجميعات Gaming مخصصة، لابتوبات Lenovo Legion بأحدث المعالجات وكروت الشاشة',
+    cta1:   { label: '🎮 تجميع Gaming',    href: '/gaming-build' },
+    cta2:   { label: '📞 تواصل معنا',      href: '#contact' },
+  },
+  {
+    badge:  'أجهزة وإكسسوارات',
+    h1:     'أجهزة',
+    h1Grad: 'أصلية معتمدة',
+    h1Sub:  'للشركات والأفراد',
+    desc:   'لابتوبات، سماعات، ساعات ذكية وإكسسوارات من أفضل العلامات العالمية',
+    cta1:   { label: '💻 تصفح المنتجات', href: '/products' },
+    cta2:   { label: '📞 تواصل معنا',    href: '#contact' },
+  },
+  {
+    badge:  'الشبكات والدعم الفني',
+    h1:     'دعم',
+    h1Grad: 'فني متكامل',
+    h1Sub:  'للشركات والمؤسسات',
+    desc:   'إعداد شبكات، صيانة دورية، ودعم تقني متواصل يضمن استمرارية عملك',
+    cta1:   { label: '📞 تواصل معنا', href: '#contact' },
+    cta2:   { label: '💼 خدماتنا',    href: '#services' },
+  },
+];
+
 /* ─── Brand Ticker ────────────────────────────────────────── */
 const BRANDS = ['Canon', 'HP', 'Epson', 'Brother', 'Lenovo', 'Dell', 'Asus', 'Samsung'];
 function BrandTicker() {
@@ -80,10 +120,45 @@ interface HeroProps {
 }
 
 /* ─── Hero ────────────────────────────────────────────────── */
-export function HeroSection({ badgeOverride, descOverride, subtitleOverride, heroImageSrc }: HeroProps) {
-  const [show, setShow] = useState(false);
+export function HeroSection({ heroImageSrc }: HeroProps) {
+  const [show,     setShow]     = useState(false);
+  const [slideIdx, setSlideIdx] = useState(0);
+  const [slideIn,  setSlideIn]  = useState(true);
+  const intervalRef    = useRef<ReturnType<typeof setInterval> | null>(null);
+  const slideToRef     = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { dir } = useLanguage();
+
   useEffect(()=>{ const t=setTimeout(()=>setShow(true),80); return ()=>clearTimeout(t); },[]);
+
+  /* Auto-cycle every 5 s */
+  const startTimer = useCallback(() => {
+    if (intervalRef.current) clearInterval(intervalRef.current);
+    intervalRef.current = setInterval(() => {
+      setSlideIn(false);
+      slideToRef.current = setTimeout(() => {
+        setSlideIdx(i => (i + 1) % SLIDES.length);
+        setSlideIn(true);
+      }, 380);
+    }, 5000);
+  }, []);
+
+  useEffect(() => {
+    startTimer();
+    return () => {
+      if (intervalRef.current)  clearInterval(intervalRef.current);
+      if (slideToRef.current)   clearTimeout(slideToRef.current);
+    };
+  }, [startTimer]);
+
+  const goToSlide = (i: number) => {
+    if (i === slideIdx) return;
+    if (slideToRef.current) clearTimeout(slideToRef.current);
+    setSlideIn(false);
+    slideToRef.current = setTimeout(() => { setSlideIdx(i); setSlideIn(true); }, 380);
+    startTimer();
+  };
+
+  const slide = SLIDES[slideIdx];
 
   const appear = (d=0) => ({
     style: { transitionDelay:`${d}ms`, transitionDuration:'700ms' } as React.CSSProperties,
@@ -103,7 +178,6 @@ export function HeroSection({ badgeOverride, descOverride, subtitleOverride, her
         .h-pulse { animation: hPulse 5s ease-in-out infinite; }
       `}</style>
 
-      {/* Particles */}
       <ParticleCanvas />
 
       {/* Tech grid — fine */}
@@ -138,11 +212,9 @@ export function HeroSection({ badgeOverride, descOverride, subtitleOverride, her
           <div className="grid grid-cols-1 lg:grid-cols-2 items-center"
             style={{ gap:'clamp(2rem,5vw,5rem)' }}>
 
-            {/* ── IMAGE — first DOM → RIGHT in RTL ── */}
+            {/* ── IMAGE ── */}
             <div {...appear(140)} className="flex items-center justify-center">
               <div style={{ position:'relative', width:'100%', maxWidth:960 }}>
-
-                {/* Glow blob */}
                 <div className="h-pulse" style={{
                   position:'absolute', left:'50%', top:'50%',
                   transform:'translate(-50%,-50%)',
@@ -151,8 +223,6 @@ export function HeroSection({ badgeOverride, descOverride, subtitleOverride, her
                   filter:'blur(90px)', borderRadius:'50%',
                   pointerEvents:'none', zIndex:0,
                 }}/>
-
-                {/* Floor glow */}
                 <div style={{
                   position:'absolute', left:'10%', bottom:'-4%',
                   width:'80%', height:'22%',
@@ -160,7 +230,6 @@ export function HeroSection({ badgeOverride, descOverride, subtitleOverride, her
                   filter:'blur(38px)', borderRadius:'50%',
                   pointerEvents:'none', zIndex:0,
                 }}/>
-
                 <img
                   src={heroImageSrc || '/assets/bec-hero.png'}
                   alt="BEC Products"
@@ -177,82 +246,107 @@ export function HeroSection({ badgeOverride, descOverride, subtitleOverride, her
               </div>
             </div>
 
-            {/* ── TEXT — second DOM → LEFT in RTL ── */}
-            <div style={{ display:'flex', flexDirection:'column', textAlign: dir==='rtl'?'right':'left', position:'relative' }}>
+            {/* ── TEXT ── */}
+            <div {...appear(0)} style={{ display:'flex', flexDirection:'column', textAlign: dir==='rtl'?'right':'left', position:'relative' }}>
 
-              {/* Badge */}
-              <div {...appear(0)} style={{ marginBottom:'1.8rem' }}>
-                <span style={{
-                  display:'inline-flex', alignItems:'center', gap:9,
-                  padding:'10px 24px', borderRadius:999,
-                  border:'1px solid rgba(96,165,250,0.28)',
-                  background:'rgba(37,99,235,0.10)',
-                  color:'#93c5fd', fontSize:'1rem', fontWeight:700, letterSpacing:'0.05em',
-                }}>
-                  <span style={{ position:'relative', display:'inline-flex', width:8, height:8, flexShrink:0 }}>
-                    <span style={{ position:'absolute', inset:0, borderRadius:'50%', background:'#60a5fa',
-                      animation:'hPing 2.2s ease-out infinite' }}/>
-                    <span style={{ position:'relative', width:8, height:8, borderRadius:'50%',
-                      background:'#60a5fa', boxShadow:'0 0 10px #60a5fa' }}/>
-                  </span>
-                  {(badgeOverride || 'شركة BEC للحلول التقنية · منذ 2017').replace(' · منذ 2017','')}
-                </span>
-              </div>
+              {/* ── Slide content — fades on change ── */}
+              <div style={{
+                transition: 'opacity 0.38s ease, transform 0.38s ease',
+                opacity:   slideIn ? 1 : 0,
+                transform: slideIn ? 'translateY(0)' : 'translateY(14px)',
+              }}>
 
-              {/* H1 */}
-              <div {...appear(110)} style={{ marginBottom:'1.2rem', position:'relative', zIndex:1 }}>
-                <h1 style={{ fontWeight:900, lineHeight:1.06, letterSpacing:'-0.02em',
-                  margin:0, fontSize:'clamp(2.8rem,5.5vw,5rem)' }}>
-                  <span style={{ display:'block', color:'#fff' }}>حلول</span>
-                  <span style={{ display:'block',
-                    backgroundImage:'linear-gradient(125deg,#60a5fa 0%,#3b82f6 45%,#818cf8 100%)',
-                    WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', backgroundClip:'text',
-                  }}>تقنية متكاملة</span>
-                  <span style={{ display:'block', color:'rgba(255,255,255,0.65)' }}>
-                    {subtitleOverride || 'للشركات والأفراد'}
-                  </span>
-                </h1>
-              </div>
-
-              {/* Divider */}
-              <div {...appear(190)} style={{ marginBottom:'1.5rem', position:'relative', zIndex:1 }}>
-                <div style={{ width:48, height:3, borderRadius:99, background:'linear-gradient(90deg,#3b82f6,#818cf8)' }}/>
-              </div>
-
-              {/* Description */}
-              <div {...appear(255)} style={{ marginBottom:'2.2rem', position:'relative', zIndex:1 }}>
-                <p style={{ color:'rgba(255,255,255,0.40)', fontSize:'1rem', lineHeight:1.85, maxWidth:'30rem', margin:0 }}>
-                  {descOverride || 'طباعة احترافية، أجهزة أصلية، وتجميعات Gaming مخصصة حسب طلبك'}
-                </p>
-              </div>
-
-              {/* CTAs */}
-              <div {...appear(340)} style={{ display:'flex', flexWrap:'wrap', gap:12, marginBottom:'2.6rem', position:'relative', zIndex:1 }}>
-                <a href="#contact"
-                  style={{
+                {/* Badge */}
+                <div style={{ marginBottom:'1.8rem' }}>
+                  <span style={{
                     display:'inline-flex', alignItems:'center', gap:9,
-                    padding:'14px 28px', borderRadius:13, fontWeight:700, fontSize:'0.9rem',
-                    color:'#fff', textDecoration:'none',
-                    background:'linear-gradient(135deg,#2563eb,#1d4ed8)',
-                    boxShadow:'0 8px 26px rgba(37,99,235,0.45)',
+                    padding:'10px 24px', borderRadius:999,
+                    border:'1px solid rgba(96,165,250,0.28)',
+                    background:'rgba(37,99,235,0.10)',
+                    color:'#93c5fd', fontSize:'1rem', fontWeight:700, letterSpacing:'0.05em',
                   }}>
-                  🖨️ حلول الطباعة
-                </a>
-                <a href="/gaming-build"
-                  style={{
-                    display:'inline-flex', alignItems:'center', gap:9,
-                    padding:'14px 28px', borderRadius:13, fontWeight:700, fontSize:'0.9rem',
-                    color:'rgba(255,255,255,0.82)', textDecoration:'none',
-                    background:'rgba(255,255,255,0.06)',
-                    backdropFilter:'blur(10px)', WebkitBackdropFilter:'blur(10px)',
-                    border:'1px solid rgba(255,255,255,0.14)',
-                  }}>
-                  🎮 تجميع Gaming
-                </a>
-              </div>
+                    <span style={{ position:'relative', display:'inline-flex', width:8, height:8, flexShrink:0 }}>
+                      <span style={{ position:'absolute', inset:0, borderRadius:'50%', background:'#60a5fa',
+                        animation:'hPing 2.2s ease-out infinite' }}/>
+                      <span style={{ position:'relative', width:8, height:8, borderRadius:'50%',
+                        background:'#60a5fa', boxShadow:'0 0 10px #60a5fa' }}/>
+                    </span>
+                    {slide.badge}
+                  </span>
+                </div>
 
-              {/* Stats */}
-              <div {...appear(440)} style={{ position:'relative', zIndex:1 }}>
+                {/* H1 */}
+                <div style={{ marginBottom:'1.2rem', position:'relative', zIndex:1 }}>
+                  <h1 style={{ fontWeight:900, lineHeight:1.06, letterSpacing:'-0.02em',
+                    margin:0, fontSize:'clamp(2.8rem,5.5vw,5rem)' }}>
+                    <span style={{ display:'block', color:'#fff' }}>{slide.h1}</span>
+                    <span style={{ display:'block',
+                      backgroundImage:'linear-gradient(125deg,#60a5fa 0%,#3b82f6 45%,#818cf8 100%)',
+                      WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', backgroundClip:'text',
+                    }}>{slide.h1Grad}</span>
+                    <span style={{ display:'block', color:'rgba(255,255,255,0.65)' }}>{slide.h1Sub}</span>
+                  </h1>
+                </div>
+
+                {/* Divider */}
+                <div style={{ marginBottom:'1.5rem', position:'relative', zIndex:1 }}>
+                  <div style={{ width:48, height:3, borderRadius:99, background:'linear-gradient(90deg,#3b82f6,#818cf8)' }}/>
+                </div>
+
+                {/* Description */}
+                <div style={{ marginBottom:'2rem', position:'relative', zIndex:1 }}>
+                  <p style={{ color:'rgba(255,255,255,0.40)', fontSize:'1rem', lineHeight:1.85, maxWidth:'30rem', margin:0 }}>
+                    {slide.desc}
+                  </p>
+                </div>
+
+                {/* CTAs */}
+                <div style={{ display:'flex', flexWrap:'wrap', gap:12, marginBottom:'1.4rem', position:'relative', zIndex:1 }}>
+                  <a href={slide.cta1.href}
+                    style={{
+                      display:'inline-flex', alignItems:'center', gap:9,
+                      padding:'14px 28px', borderRadius:13, fontWeight:700, fontSize:'0.9rem',
+                      color:'#fff', textDecoration:'none',
+                      background:'linear-gradient(135deg,#2563eb,#1d4ed8)',
+                      boxShadow:'0 8px 26px rgba(37,99,235,0.45)',
+                    }}>
+                    {slide.cta1.label}
+                  </a>
+                  <a href={slide.cta2.href}
+                    style={{
+                      display:'inline-flex', alignItems:'center', gap:9,
+                      padding:'14px 28px', borderRadius:13, fontWeight:700, fontSize:'0.9rem',
+                      color:'rgba(255,255,255,0.82)', textDecoration:'none',
+                      background:'rgba(255,255,255,0.06)',
+                      backdropFilter:'blur(10px)', WebkitBackdropFilter:'blur(10px)',
+                      border:'1px solid rgba(255,255,255,0.14)',
+                    }}>
+                    {slide.cta2.label}
+                  </a>
+                </div>
+
+                {/* Slide indicators */}
+                <div style={{ display:'flex', gap:8, marginBottom:'1.8rem' }}>
+                  {SLIDES.map((_, i) => (
+                    <button
+                      key={i}
+                      onClick={() => goToSlide(i)}
+                      aria-label={`الشريحة ${i + 1}`}
+                      style={{
+                        height: 4, borderRadius: 99, padding: 0, border: 'none', cursor: 'pointer',
+                        width: i === slideIdx ? 36 : 8,
+                        background: i === slideIdx ? '#60a5fa' : 'rgba(255,255,255,0.18)',
+                        transition: 'all 0.35s ease',
+                        flexShrink: 0,
+                      }}
+                    />
+                  ))}
+                </div>
+
+              </div>{/* end slide content */}
+
+              {/* Stats — always visible, outside slide fade */}
+              <div style={{ position:'relative', zIndex:1 }}>
                 <div style={{ borderTop:'1px solid rgba(255,255,255,0.07)', paddingTop:'1.6rem',
                   display:'flex', flexWrap:'wrap', gap:'2.4rem' }}>
                   {[
