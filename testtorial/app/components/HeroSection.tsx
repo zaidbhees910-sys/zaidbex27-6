@@ -238,7 +238,7 @@ export function HeroSection({ badgeOverride, descOverride, subtitleOverride, her
                   }}>
                   🖨️ حلول الطباعة
                 </a>
-                <a href="#contact"
+                <a href="/gaming-build"
                   style={{
                     display:'inline-flex', alignItems:'center', gap:9,
                     padding:'14px 28px', borderRadius:13, fontWeight:700, fontSize:'0.9rem',

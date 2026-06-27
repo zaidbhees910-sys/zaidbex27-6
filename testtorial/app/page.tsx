@@ -322,11 +322,11 @@ export default function Home() {
                   <p className="text-gray-400 text-sm leading-relaxed mb-5 flex-1">
                     اطلب جهازك بالمواصفات التي تريدها ونحن نقوم بالتجميع خلال فترة قصيرة بأفضل القطع المناسبة
                   </p>
-                  <a href="#contact"
+                  <Link href="/gaming-build"
                     className="inline-flex items-center gap-2 text-purple-600 font-bold text-sm hover:gap-3 transition-all duration-300">
                     <svg className="w-4 h-4 rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7"/></svg>
                     اطلب جهازك
-                  </a>
+                  </Link>
                 </div>
               </div>
 
@@ -556,7 +556,7 @@ export default function Home() {
 
 
 
-<a href="#contact" className="
+<Link href="/gaming-build" className="
 mt-8
 w-fit
 px-10
@@ -567,11 +567,14 @@ text-white
 font-bold
 shadow-lg
 inline-block
+hover:bg-purple-500
+transition-colors
+duration-200
 ">
 
-🎧 ابدأ طلب التجميع
+✨ اعرف المزيد
 
-</a>
+</Link>
 
 
 </div>

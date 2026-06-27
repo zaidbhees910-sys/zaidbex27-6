@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import ImageUpload from '../components/ImageUpload';
+import { invalidateProductsCache } from '../../lib/products-cache';
 
 interface AttributeOption {
   id: number;
@@ -178,7 +179,7 @@ export default function AdminPage() {
       const url = editingProduct ? `/api?action=updateProduct&id=${editingProduct.id}` : '/api';
       const method = editingProduct ? 'PUT' : 'POST';
       const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(editingProduct ? payload : { ...payload, variants: [] }) });
-      if (res.ok) { await fetchProducts(); resetForm(); }
+      if (res.ok) { invalidateProductsCache(); await fetchProducts(); resetForm(); }
       else { const e2 = await res.json(); alert(e2.error || 'خطأ'); }
     } catch { alert('خطأ في الاتصال'); }
     setIsSubmitting(false);
@@ -187,7 +188,7 @@ export default function AdminPage() {
   const handleDeleteProduct = async (id: number) => {
     if (!confirm('هل أنت متأكد من حذف هذا المنتج وجميع أصنافه؟')) return;
     const res = await fetch(`/api?action=deleteProduct&id=${id}`, { method: 'DELETE' });
-    if (res.ok) await fetchProducts();
+    if (res.ok) { invalidateProductsCache(); await fetchProducts(); }
   };
 
   const handleAddVariant = (productId: number) => {
@@ -213,7 +214,7 @@ export default function AdminPage() {
       const action = editingVariant ? 'updateVariant' : 'addVariant';
       const url = editingVariant ? `/api?action=${action}&id=${editingVariant.id}` : `/api?action=${action}`;
       const res = await fetch(url, { method: editingVariant ? 'PUT' : 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action, ...variantData, price: parseInt(variantData.price), stock: variantData.stock ? parseInt(variantData.stock) : null }) });
-      if (res.ok) { await fetchProducts(); resetVariantForm(); }
+      if (res.ok) { invalidateProductsCache(); await fetchProducts(); resetVariantForm(); }
       else { const e2 = await res.json(); alert(e2.error || 'خطأ'); }
     } catch { alert('خطأ في الاتصال'); }
     setIsSubmitting(false);
@@ -248,7 +249,7 @@ export default function AdminPage() {
         body: JSON.stringify({ action: 'updateVariant', ...inlineData, price: parseInt(inlineData.price), stock: inlineData.stock ? parseInt(inlineData.stock) : null, gallery: inlineData.gallery || [] }),
       });
       if (res.ok) {
-        await fetchProducts();
+        invalidateProductsCache(); await fetchProducts();
         setInlineEditingId(null); setInlineData(null);
       } else { const e2 = await res.json(); alert(e2.error || 'خطأ'); }
     } catch { alert('خطأ في الاتصال'); }
@@ -259,7 +260,7 @@ export default function AdminPage() {
     if (!confirm('هل أنت متأكد من حذف هذا الصنف؟')) return;
     const res = await fetch(`/api?action=deleteVariant&id=${id}`, { method: 'DELETE' });
     if (res.ok) {
-      await fetchProducts();
+      invalidateProductsCache(); await fetchProducts();
       setManagingProduct(prev => prev ? { ...prev, variants: prev.variants.filter(v => v.id !== id) } : null);
     }
   };
@@ -272,6 +273,7 @@ export default function AdminPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'toggleFeatured', featured }),
       });
+      invalidateProductsCache();
       setProducts(prev => prev.map(p => p.id === id ? { ...p, featured } : p));
     } catch { alert('خطأ في الاتصال'); }
     setTogglingId(null);
@@ -285,6 +287,7 @@ export default function AdminPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'toggleVariantFeatured', featured }),
       });
+      invalidateProductsCache();
       setProducts(prev => prev.map(p =>
         p.id === productId
           ? { ...p, variants: p.variants.map(v => v.id === variantId ? { ...v, featured } : v) }
@@ -302,6 +305,7 @@ export default function AdminPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'toggleHidden', hidden }),
       });
+      invalidateProductsCache();
       setProducts(prev => prev.map(p => p.id === id ? { ...p, hidden } : p));
     } catch { alert('خطأ في الاتصال'); }
     setHidingId(null);
@@ -315,6 +319,7 @@ export default function AdminPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'toggleVariantHidden', hidden }),
       });
+      invalidateProductsCache();
       const updateVariants = (variants: Variant[]) =>
         variants.map(v => v.id === variantId ? { ...v, hidden } : v);
       setProducts(prev => prev.map(p =>
@@ -331,7 +336,7 @@ export default function AdminPage() {
     try {
       const res = await fetch('/api', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'consolidateInkProducts', parentName: 'حبر BEC' }) });
       const data = await res.json();
-      if (data.success) { alert(`تم الدمج بنجاح — ${data.merged} منتج أصبح صنفاً`); await fetchProducts(); }
+      if (data.success) { alert(`تم الدمج بنجاح — ${data.merged} منتج أصبح صنفاً`); invalidateProductsCache(); await fetchProducts(); }
       else alert('حدث خطأ أثناء الدمج');
     } catch { alert('خطأ في الاتصال'); }
     setConsolidating(false);

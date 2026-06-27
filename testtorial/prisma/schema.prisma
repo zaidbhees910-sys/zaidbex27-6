@@ -14,54 +14,55 @@ model Product {
   category    String
   description String
   image       String
-  type        String    @default("Device")
-  brand       String    @default("")
-  modelNumber String    @default("")
-  colorType   String    @default("")
-  featured    Boolean   @default(false)
-  hidden      Boolean   @default(false)
-  variants    Variant[]
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+  featured    Boolean   @default(false)
+  type        String    @default("Device")
+  brand       String    @default("")
+  colorType   String    @default("")
+  modelNumber String    @default("")
+  hidden      Boolean   @default(false)
+  variants    Variant[]
 }
 
 model Variant {
   id             Int                @id @default(autoincrement())
-  productId      Int
-  product        Product            @relation(fields: [productId], references: [id], onDelete: Cascade)
   name           String
-  brand          String             @default("")
   price          Int
   specifications String
+  productId      Int
+  createdAt      DateTime           @default(now())
   image          String
   stock          Int?
+  updatedAt      DateTime           @updatedAt
+  brand          String             @default("")
   colorType      String             @default("")
   featured       Boolean            @default(false)
   hidden         Boolean            @default(false)
+  gallery        String             @default("[]")
   attributes     ProductAttribute[]
-  createdAt      DateTime           @default(now())
-  updatedAt      DateTime           @updatedAt
+  product        Product            @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
 
 model ProductAttribute {
   id        Int               @id @default(autoincrement())
   variantId Int
-  variant   Variant           @relation(fields: [variantId], references: [id], onDelete: Cascade)
   name      String
   order     Int               @default(0)
-  options   AttributeOption[]
   createdAt DateTime          @default(now())
+  options   AttributeOption[]
+  variant   Variant           @relation(fields: [variantId], references: [id], onDelete: Cascade)
 }
 
 model AttributeOption {
   id          Int              @id @default(autoincrement())
   attributeId Int
-  attribute   ProductAttribute @relation(fields: [attributeId], references: [id], onDelete: Cascade)
   value       String
   image       String           @default("")
-  price       Int?
   order       Int              @default(0)
   createdAt   DateTime         @default(now())
+  price       Int?
+  attribute   ProductAttribute @relation(fields: [attributeId], references: [id], onDelete: Cascade)
 }
 
 model Admin {
@@ -69,4 +70,38 @@ model Admin {
   username  String   @unique
   password  String
   createdAt DateTime @default(now())
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model HomepageBanner {
+  id        Int     @id @default(autoincrement())
+  title     String  @default("")
+  subtitle  String  @default("")
+  ctaText   String  @default("عرض المنتجات")
+  ctaLink   String  @default("/products")
+  bgColor   String  @default("#2563eb")
+  image     String  @default("")
+  active    Boolean @default(true)
+  sortOrder Int     @default(0)
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model HomepageCategory {
+  id          Int     @id @default(autoincrement())
+  title       String  @default("")
+  description String  @default("")
+  image       String  @default("")
+  link        String  @default("/products")
+  icon        String  @default("")
+  active      Boolean @default(true)
+  sortOrder   Int     @default(0)
+  productIds  String  @default("[]")
+  variantIds  String  @default("[]")
+  displayMode String  @default("products")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model HomepageSettings {
+  key   String @id
+  value String @default("")
 }

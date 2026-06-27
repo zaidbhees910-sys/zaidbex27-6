@@ -287,7 +287,7 @@ function ProductsPageInner() {
   const [fMax, setFMax] = useState(999999);
   const [boundsReady, setBoundsReady] = useState(false);
 
-  /* fetch — uses module-level cache so back-navigation is instant */
+  /* fetch */
   useEffect(() => {
     fetchAllProducts()
       .then((data) => {
@@ -301,9 +301,9 @@ function ProductsPageInner() {
           setPMin(lo); setPMax(hi); setFMin(lo); setFMax(hi);
         }
         setBoundsReady(true);
+        setLoading(false);
       })
-      .catch(() => setBoundsReady(true))
-      .finally(() => setLoading(false));
+      .catch(() => { setBoundsReady(true); setLoading(false); });
   }, []);
 
   /* URL params → pre-select type OR categoryId */
@@ -422,7 +422,7 @@ function ProductsPageInner() {
       if (categoryVariantIds !== null && !categoryVariantIds.includes(v.id)) return false;
       if (selectedTypes.length > 0 && !selectedTypes.includes(v.type)) return false;
       if (selectedBrands.length > 0 && !selectedBrands.includes(v.brand)) return false;
-      if (v.price < fMin || v.price > fMax) return false;
+      if (v.price > 0 && (v.price < fMin || v.price > fMax)) return false;
       if (searchTerm) {
         const q = searchTerm.toLowerCase();
         if (!v.name.toLowerCase().includes(q) && !(v.brand || '').toLowerCase().includes(q)) return false;

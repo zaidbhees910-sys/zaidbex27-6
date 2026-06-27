@@ -55,12 +55,11 @@ export async function GET(request: NextRequest) {
         }),
       }));
 
-      const CC = { 'Cache-Control': 'public, max-age=30, stale-while-revalidate=90' };
       if (admin) return NextResponse.json(withExtras, { headers: { 'Cache-Control': 'no-store' } });
       const result = withExtras
         .filter((p: any) => !p.hidden)
         .map((p: any) => ({ ...p, variants: p.variants.filter((v: any) => !v.hidden) }));
-      return NextResponse.json(result, { headers: CC });
+      return NextResponse.json(result, { headers: { 'Cache-Control': 'no-store' } });
     }
 
     if (action === 'getHomepageData') {
@@ -99,7 +98,7 @@ export async function GET(request: NextRequest) {
           ? catVariantIds[cat.id].map(id => variantMap[id]).filter(Boolean)
           : [],
       }));
-      return NextResponse.json({ settings: settingsMap, banners, categories }, { headers: { 'Cache-Control': 'public, max-age=30, stale-while-revalidate=90' } });
+      return NextResponse.json({ settings: settingsMap, banners, categories }, { headers: { 'Cache-Control': 'no-store' } });
     }
 
     if (action === 'getHomepageAdmin') {
@@ -193,8 +192,7 @@ export async function GET(request: NextRequest) {
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const enriched = { ...product, variants: visibleVariants.map((v: any) => ({ ...v, gallery: galleryMap[v.id] || [], attributes: attrMap[v.id] || [] })) };
-      const cc = admin ? { 'Cache-Control': 'no-store' } : { 'Cache-Control': 'public, max-age=60, stale-while-revalidate=120' };
-      return NextResponse.json(enriched, { headers: cc });
+      return NextResponse.json(enriched, { headers: { 'Cache-Control': 'no-store' } });
     }
 
     if (action === 'getAttributes') {
