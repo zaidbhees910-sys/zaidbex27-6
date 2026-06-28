@@ -2,6 +2,9 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useCms } from '../contexts/CmsContext';
+import { EditableText } from './cms/EditableText';
+import { EditableImage } from './cms/EditableImage';
 
 /* ─── Service Slides ──────────────────────────────────────── */
 const SLIDES = [
@@ -135,6 +138,7 @@ export function HeroSection(_props: HeroProps) {
   const intervalRef    = useRef<ReturnType<typeof setInterval> | null>(null);
   const slideToRef     = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { dir } = useLanguage();
+  const { getBlock } = useCms();
 
   useEffect(()=>{ const t=setTimeout(()=>setShow(true),80); return ()=>clearTimeout(t); },[]);
 
@@ -166,7 +170,18 @@ export function HeroSection(_props: HeroProps) {
     startTimer();
   };
 
-  const slide = SLIDES[slideIdx];
+  const rawSlide = SLIDES[slideIdx];
+  /* CMS overrides per slide */
+  const sk = (k: string) => `hero.slide.${slideIdx}.${k}`;
+  const slide = {
+    ...rawSlide,
+    badge:    getBlock(sk('badge'))    ?? rawSlide.badge,
+    h1:       getBlock(sk('h1'))       ?? rawSlide.h1,
+    h1Grad:   getBlock(sk('h1Grad'))   ?? rawSlide.h1Grad,
+    h1Sub:    getBlock(sk('h1Sub'))    ?? rawSlide.h1Sub,
+    desc:     getBlock(sk('desc'))     ?? rawSlide.desc,
+    imageSrc: getBlock(sk('image'))    ?? rawSlide.imageSrc,
+  };
 
   const appear = (d=0) => ({
     style: { transitionDelay:`${d}ms`, transitionDuration:'700ms' } as React.CSSProperties,
@@ -239,16 +254,17 @@ export function HeroSection(_props: HeroProps) {
                   pointerEvents:'none', zIndex:0,
                 }}/>
                 {/* Image — screen blend removes dark/white bg, only glowing product stays */}
-                <img
-                  src={slide.imageSrc}
+                <EditableImage
+                  blockKey={sk('image')}
+                  defaultSrc={rawSlide.imageSrc}
                   alt={slide.badge}
                   className="h-float"
-                  style={{
+                  imgStyle={{
                     position:'relative', zIndex:1,
                     display:'block',
                     width:'100%', height:580,
                     objectFit:'contain',
-                    transform:`scale(${slide.imgScale})`,
+                    transform:`scale(${rawSlide.imgScale})`,
                     transformOrigin:'center center',
                     mixBlendMode: 'screen',
                     filter:'brightness(1.6) contrast(1.05) saturate(1.25) drop-shadow(0 0 60px rgba(37,99,235,0.9)) drop-shadow(0 0 120px rgba(96,165,250,0.55))',
@@ -284,7 +300,7 @@ export function HeroSection(_props: HeroProps) {
                       <span style={{ position:'relative', width:8, height:8, borderRadius:'50%',
                         background:'#60a5fa', boxShadow:'0 0 10px #60a5fa' }}/>
                     </span>
-                    {slide.badge}
+                    <EditableText blockKey={sk('badge')} defaultValue={rawSlide.badge} tag="span" />
                   </span>
                 </div>
 
@@ -292,12 +308,12 @@ export function HeroSection(_props: HeroProps) {
                 <div style={{ marginBottom:'1.2rem', position:'relative', zIndex:1 }}>
                   <h1 style={{ fontWeight:900, lineHeight:1.06, letterSpacing:'-0.02em',
                     margin:0, fontSize:'clamp(2.8rem,5.5vw,5rem)' }}>
-                    <span style={{ display:'block', color:'#fff' }}>{slide.h1}</span>
-                    <span style={{ display:'block',
+                    <EditableText blockKey={sk('h1')} defaultValue={rawSlide.h1} tag="span" style={{ display:'block', color:'#fff' }} />
+                    <EditableText blockKey={sk('h1Grad')} defaultValue={rawSlide.h1Grad} tag="span" style={{ display:'block',
                       backgroundImage:'linear-gradient(125deg,#60a5fa 0%,#3b82f6 45%,#818cf8 100%)',
                       WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', backgroundClip:'text',
-                    }}>{slide.h1Grad}</span>
-                    <span style={{ display:'block', color:'rgba(255,255,255,0.65)' }}>{slide.h1Sub}</span>
+                    }} />
+                    <EditableText blockKey={sk('h1Sub')} defaultValue={rawSlide.h1Sub} tag="span" style={{ display:'block', color:'rgba(255,255,255,0.65)' }} />
                   </h1>
                 </div>
 
@@ -308,9 +324,8 @@ export function HeroSection(_props: HeroProps) {
 
                 {/* Description */}
                 <div style={{ marginBottom:'2rem', position:'relative', zIndex:1 }}>
-                  <p style={{ color:'rgba(255,255,255,0.40)', fontSize:'1rem', lineHeight:1.85, maxWidth:'30rem', margin:0 }}>
-                    {slide.desc}
-                  </p>
+                  <EditableText blockKey={sk('desc')} defaultValue={rawSlide.desc} tag="p" multiline
+                    style={{ color:'rgba(255,255,255,0.40)', fontSize:'1rem', lineHeight:1.85, maxWidth:'30rem', margin:0 }} />
                 </div>
 
                 {/* CTAs */}

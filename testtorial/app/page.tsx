@@ -9,6 +9,11 @@ import IntroScreen from './components/IntroScreen';
 import { COMPANY_NAME } from './constants/company';
 import { useLanguage } from './contexts/LanguageContext';
 import { useAutoTranslateBatch } from './hooks/useAutoTranslate';
+import { CmsProvider } from './contexts/CmsContext';
+import { CmsToolbar, CmsPageSpacer } from './components/cms/CmsToolbar';
+import { EditableText } from './components/cms/EditableText';
+import { EditableImage } from './components/cms/EditableImage';
+import { EditableSection } from './components/cms/EditableSection';
 
 /* ─── Types ──────────────────────────────────────────────── */
 interface Variant { id: number; name: string; brand: string; price: number; specifications: string; image: string; stock?: number; featured?: boolean; }
@@ -256,9 +261,11 @@ export default function Home() {
   }
 
   return (
-    <>
+    <CmsProvider>
+      <CmsToolbar />
       {showIntro && <IntroScreen onDone={handleIntroDone} />}
       <div className="min-h-screen bg-white font-sans" dir={dir}>
+        <CmsPageSpacer />
         <Navbar />
 
         {/* ══ 1. HERO ══════════════════════════════════════════ */}
@@ -273,6 +280,7 @@ export default function Home() {
         />
 
         {/* ══ 2. حلولنا الرئيسية — horizontal solution cards ══ */}
+        <EditableSection blockKey="section.cards" label="كروت الخدمات">
         <section className="py-24 px-4 md:px-8" style={{ background: '#f8faff' }}>
           <div className="max-w-[1260px] mx-auto">
 
@@ -301,11 +309,9 @@ export default function Home() {
                     <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300" style={{ background: 'linear-gradient(135deg,#eff6ff,#dbeafe)' }}>
                       <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
                     </div>
-                    <h3 className="text-lg font-black text-gray-900">حلول الطباعة للشركات</h3>
+                    <EditableText blockKey="card.print.title" defaultValue="حلول الطباعة للشركات" tag="h3" className="text-lg font-black text-gray-900" />
                   </div>
-                  <p className="text-gray-500 text-sm leading-relaxed mb-5 flex-1">
-                    أحبار BEC الأصلية، طابعات وماكينات تصوير مع عقود توريد وصيانة تضمن استمرارية عملك
-                  </p>
+                  <EditableText blockKey="card.print.desc" defaultValue="أحبار BEC الأصلية، طابعات وماكينات تصوير مع عقود توريد وصيانة تضمن استمرارية عملك" tag="p" className="text-gray-500 text-sm leading-relaxed mb-5 flex-1" multiline />
                   <a href="#printer-card"
                     className="inline-flex items-center gap-2 text-blue-600 font-bold text-sm group-hover:gap-3 transition-all duration-300">
                     <svg className="w-4 h-4 rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7"/></svg>
@@ -325,11 +331,9 @@ export default function Home() {
                     <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300" style={{ background: 'linear-gradient(135deg,#faf5ff,#ede9fe)' }}>
                       <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z"/></svg>
                     </div>
-                    <h3 className="text-lg font-black text-gray-900">تجميعات Gaming</h3>
+                    <EditableText blockKey="card.gaming.title" defaultValue="تجميعات Gaming" tag="h3" className="text-lg font-black text-gray-900" />
                   </div>
-                  <p className="text-gray-500 text-sm leading-relaxed mb-5 flex-1">
-                    جهازك بمواصفاتك أنت — تجميع مخصص بأفضل القطع الأصلية وأسعار منافسة خلال فترة قصيرة
-                  </p>
+                  <EditableText blockKey="card.gaming.desc" defaultValue="جهازك بمواصفاتك أنت — تجميع مخصص بأفضل القطع الأصلية وأسعار منافسة خلال فترة قصيرة" tag="p" className="text-gray-500 text-sm leading-relaxed mb-5 flex-1" multiline />
                   <Link href="/gaming-build"
                     className="inline-flex items-center gap-2 text-purple-600 font-bold text-sm group-hover:gap-3 transition-all duration-300">
                     <svg className="w-4 h-4 rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7"/></svg>
@@ -349,11 +353,9 @@ export default function Home() {
                     <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300" style={{ background: 'linear-gradient(135deg,#ecfeff,#cffafe)' }}>
                       <svg className="w-5 h-5 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
                     </div>
-                    <h3 className="text-lg font-black text-gray-900">الأجهزة والإكسسوارات</h3>
+                    <EditableText blockKey="card.devices.title" defaultValue="الأجهزة والإكسسوارات" tag="h3" className="text-lg font-black text-gray-900" />
                   </div>
-                  <p className="text-gray-500 text-sm leading-relaxed mb-5 flex-1">
-                    لابتوبات، سماعات، ساعات ذكية وإكسسوارات أصلية من Green Lion وLenovo وغيرها
-                  </p>
+                  <EditableText blockKey="card.devices.desc" defaultValue="لابتوبات، سماعات، ساعات ذكية وإكسسوارات أصلية من Green Lion وLenovo وغيرها" tag="p" className="text-gray-500 text-sm leading-relaxed mb-5 flex-1" multiline />
                   <Link href="/products"
                     className="inline-flex items-center gap-2 text-cyan-600 font-bold text-sm group-hover:gap-3 transition-all duration-300">
                     <svg className="w-4 h-4 rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7"/></svg>
@@ -365,6 +367,7 @@ export default function Home() {
             </div>
           </div>
         </section>
+        </EditableSection>
 
         {/* ══ 5. BEC INK SECTION ═══════════════════════════════ */}
         <section id="bec-ink" className="relative py-24 px-4 md:px-8 overflow-hidden bg-white border-y border-gray-100">
@@ -801,6 +804,7 @@ duration-200
         )}
 
         {/* ══ 9. ABOUT ═════════════════════════════════════════ */}
+        <EditableSection blockKey="section.about" label="من نحن">
         <section id="about" className="py-20 px-4 md:px-8 bg-white border-b border-gray-100">
           <div className="max-w-[1400px] mx-auto">
             <div className="text-center mb-12">
@@ -849,16 +853,16 @@ duration-200
                   </div>
                   <div className="grid grid-cols-2 gap-4 mb-8 relative">
                     {[
-                      { val:'7+',   lbl:'سنوات خبرة',        icon:'🏆' },
-                      { val:'50+',  lbl:'عميل شركة',          icon:'🏢' },
-                      { val:'∞',    lbl:'عقود طباعة مستمرة', icon:'🖨️' },
-                      { val:'500+', lbl:'منتج',               icon:'📦' },
-                    ].map(({ val, lbl, icon }) => (
-                      <div key={lbl} className="text-center rounded-2xl py-5 px-3 hover:scale-105 transition-transform duration-300"
+                      { bk:'stat0', val:'7+',   lbl:'سنوات خبرة',        icon:'🏆' },
+                      { bk:'stat1', val:'50+',  lbl:'عميل شركة',          icon:'🏢' },
+                      { bk:'stat2', val:'∞',    lbl:'عقود طباعة مستمرة', icon:'🖨️' },
+                      { bk:'stat3', val:'500+', lbl:'منتج',               icon:'📦' },
+                    ].map(({ bk, val, lbl, icon }) => (
+                      <div key={bk} className="text-center rounded-2xl py-5 px-3 hover:scale-105 transition-transform duration-300"
                         style={{ background:'rgba(255,255,255,0.10)', backdropFilter:'blur(8px)', border:'1px solid rgba(255,255,255,0.15)' }}>
                         <div className="text-2xl mb-1">{icon}</div>
-                        <div className="text-4xl font-black tracking-tight">{val}</div>
-                        <div className="text-blue-100 text-xs font-medium mt-1.5 leading-tight">{lbl}</div>
+                        <EditableText blockKey={`about.${bk}.val`} defaultValue={val} tag="div" className="text-4xl font-black tracking-tight" />
+                        <EditableText blockKey={`about.${bk}.lbl`} defaultValue={lbl} tag="div" className="text-blue-100 text-xs font-medium mt-1.5 leading-tight" />
                       </div>
                     ))}
                   </div>
@@ -868,8 +872,10 @@ duration-200
             </div>
           </div>
         </section>
+        </EditableSection>
 
         {/* ══ 10. SERVICES ══════════════════════════════════════ */}
+        <EditableSection blockKey="section.services" label="خدماتنا">
         <section id="services" className="py-20 px-4 md:px-8 bg-white border-b border-gray-100">
           <div className="max-w-[1400px] mx-auto">
             <div className="text-center mb-16">
@@ -891,8 +897,10 @@ duration-200
             </div>
           </div>
         </section>
+        </EditableSection>
 
         {/* ══ 11. CONTACT ══════════════════════════════════════ */}
+        <EditableSection blockKey="section.contact" label="تواصل معنا">
         <section id="contact" className="py-24 px-4 md:px-8 bg-[#f0f5ff]">
           <div className="max-w-[1400px] mx-auto">
             <div className="text-center mb-16">
@@ -942,6 +950,7 @@ duration-200
             </div>
           </div>
         </section>
+        </EditableSection>
 
         {/* ══ FOOTER ═══════════════════════════════════════════ */}
         <footer className="bg-[#111111] text-gray-400 py-16 border-t border-gray-800">
@@ -989,6 +998,6 @@ duration-200
           </div>
         </footer>
       </div>
-    </>
+    </CmsProvider>
   );
 }

@@ -105,3 +105,15 @@ model HomepageSettings {
   key   String @id
   value String @default("")
 }
+
+model ContentBlock {
+  id        String   @id @default(cuid())
+  pageSlug  String   @default("home")
+  blockKey  String
+  blockType String   @default("text")
+  value     String   @default("")
+  updatedAt DateTime @updatedAt
+
+  @@unique([pageSlug, blockKey])
+  @@index([pageSlug])
+}
