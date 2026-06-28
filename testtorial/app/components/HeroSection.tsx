@@ -238,25 +238,24 @@ export function HeroSection(_props: HeroProps) {
                   filter:'blur(38px)', borderRadius:'50%',
                   pointerEvents:'none', zIndex:0,
                 }}/>
-                {/* Image fades with slide */}
-                <div style={{
-                  position:'relative', zIndex:1,
-                  transition: 'opacity 0.38s ease',
-                  opacity: slideIn ? 1 : 0,
-                }}>
-                  <img
-                    src={slide.imageSrc}
-                    alt={slide.badge}
-                    className="h-float"
-                    style={{
-                      width:'100%', height:620,
-                      objectFit:'contain',
-                      transform:`scale(${slide.imgScale})`,
-                      transformOrigin:'center center',
-                      filter:'drop-shadow(0 0 55px rgba(37,99,235,0.62)) drop-shadow(0 28px 60px rgba(29,78,216,0.40)) brightness(1.07) saturate(1.13)',
-                    }}
-                  />
-                </div>
+                {/* Image — screen blend removes dark/white bg, only glowing product stays */}
+                <img
+                  src={slide.imageSrc}
+                  alt={slide.badge}
+                  className="h-float"
+                  style={{
+                    position:'relative', zIndex:1,
+                    display:'block',
+                    width:'100%', height:580,
+                    objectFit:'contain',
+                    transform:`scale(${slide.imgScale})`,
+                    transformOrigin:'center center',
+                    mixBlendMode: 'screen',
+                    filter:'brightness(1.6) contrast(1.05) saturate(1.25) drop-shadow(0 0 60px rgba(37,99,235,0.9)) drop-shadow(0 0 120px rgba(96,165,250,0.55))',
+                    opacity: slideIn ? 1 : 0,
+                    transition: 'opacity 0.38s ease',
+                  }}
+                />
               </div>
             </div>
 
