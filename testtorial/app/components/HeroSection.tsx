@@ -13,8 +13,8 @@ const SLIDES = [
     desc:     'أحبار BEC الأصلية وطابعات HP وCanon وBrother مع عقود توريد وصيانة مستمرة',
     cta1:     { label: '🖨️ حلول الطباعة', href: '#printer-card' },
     cta2:     { label: '🎮 تجميع Gaming',  href: '/gaming-build' },
-    imageSrc: '/assets/bec-printer.png',
-    imgScale: 2.4,
+    imageSrc: '/assets/hero-slide-printing.png',
+    imgScale: 1.05,
   },
   {
     badge:    'تجميعات Gaming احترافية',
@@ -24,8 +24,8 @@ const SLIDES = [
     desc:     'تجميعات Gaming مخصصة، لابتوبات Lenovo Legion بأحدث المعالجات وكروت الشاشة',
     cta1:     { label: '🎮 تجميع Gaming',    href: '/gaming-build' },
     cta2:     { label: '📞 تواصل معنا',      href: '#contact' },
-    imageSrc: '/assets/split-gaming.png',
-    imgScale: 2.2,
+    imageSrc: '/assets/hero-slide-gaming.png',
+    imgScale: 1.05,
   },
   {
     badge:    'أجهزة وإكسسوارات',
@@ -35,8 +35,8 @@ const SLIDES = [
     desc:     'لابتوبات، سماعات، ساعات ذكية وإكسسوارات من أفضل العلامات العالمية',
     cta1:     { label: '💻 تصفح المنتجات', href: '/products' },
     cta2:     { label: '📞 تواصل معنا',    href: '#contact' },
-    imageSrc: '/assets/bec-products.png',
-    imgScale: 2.6,
+    imageSrc: '/assets/hero-slide-devices.png',
+    imgScale: 1.05,
   },
   {
     badge:    'الشبكات والدعم الفني',
@@ -46,8 +46,8 @@ const SLIDES = [
     desc:     'إعداد شبكات، صيانة دورية، ودعم تقني متواصل يضمن استمرارية عملك',
     cta1:     { label: '📞 تواصل معنا', href: '#contact' },
     cta2:     { label: '💼 خدماتنا',    href: '#services' },
-    imageSrc: '/assets/bec-hero.png',
-    imgScale: 2.8,
+    imageSrc: '/assets/hero-slide-network.png',
+    imgScale: 1.05,
   },
 ];
 
