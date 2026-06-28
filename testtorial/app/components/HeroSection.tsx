@@ -6,40 +6,48 @@ import { useLanguage } from '../contexts/LanguageContext';
 /* ─── Service Slides ──────────────────────────────────────── */
 const SLIDES = [
   {
-    badge:  'حلول الطباعة للشركات',
-    h1:     'حلول',
-    h1Grad: 'طباعة احترافية',
-    h1Sub:  'للشركات والمكاتب',
-    desc:   'أحبار BEC الأصلية وطابعات HP وCanon وBrother مع عقود توريد وصيانة مستمرة',
-    cta1:   { label: '🖨️ حلول الطباعة', href: '#printer-card' },
-    cta2:   { label: '🎮 تجميع Gaming',  href: '/gaming-build' },
+    badge:    'حلول الطباعة للشركات',
+    h1:       'حلول',
+    h1Grad:   'طباعة احترافية',
+    h1Sub:    'للشركات والمكاتب',
+    desc:     'أحبار BEC الأصلية وطابعات HP وCanon وBrother مع عقود توريد وصيانة مستمرة',
+    cta1:     { label: '🖨️ حلول الطباعة', href: '#printer-card' },
+    cta2:     { label: '🎮 تجميع Gaming',  href: '/gaming-build' },
+    imageSrc: '/assets/bec-printer.png',
+    imgScale: 2.4,
   },
   {
-    badge:  'تجميعات Gaming احترافية',
-    h1:     'ابني',
-    h1Grad: 'جهازك المثالي',
-    h1Sub:  'بالمواصفات التي تريدها',
-    desc:   'تجميعات Gaming مخصصة، لابتوبات Lenovo Legion بأحدث المعالجات وكروت الشاشة',
-    cta1:   { label: '🎮 تجميع Gaming',    href: '/gaming-build' },
-    cta2:   { label: '📞 تواصل معنا',      href: '#contact' },
+    badge:    'تجميعات Gaming احترافية',
+    h1:       'ابني',
+    h1Grad:   'جهازك المثالي',
+    h1Sub:    'بالمواصفات التي تريدها',
+    desc:     'تجميعات Gaming مخصصة، لابتوبات Lenovo Legion بأحدث المعالجات وكروت الشاشة',
+    cta1:     { label: '🎮 تجميع Gaming',    href: '/gaming-build' },
+    cta2:     { label: '📞 تواصل معنا',      href: '#contact' },
+    imageSrc: '/assets/split-gaming.png',
+    imgScale: 2.2,
   },
   {
-    badge:  'أجهزة وإكسسوارات',
-    h1:     'أجهزة',
-    h1Grad: 'أصلية معتمدة',
-    h1Sub:  'للشركات والأفراد',
-    desc:   'لابتوبات، سماعات، ساعات ذكية وإكسسوارات من أفضل العلامات العالمية',
-    cta1:   { label: '💻 تصفح المنتجات', href: '/products' },
-    cta2:   { label: '📞 تواصل معنا',    href: '#contact' },
+    badge:    'أجهزة وإكسسوارات',
+    h1:       'أجهزة',
+    h1Grad:   'أصلية معتمدة',
+    h1Sub:    'للشركات والأفراد',
+    desc:     'لابتوبات، سماعات، ساعات ذكية وإكسسوارات من أفضل العلامات العالمية',
+    cta1:     { label: '💻 تصفح المنتجات', href: '/products' },
+    cta2:     { label: '📞 تواصل معنا',    href: '#contact' },
+    imageSrc: '/assets/bec-products.png',
+    imgScale: 2.6,
   },
   {
-    badge:  'الشبكات والدعم الفني',
-    h1:     'دعم',
-    h1Grad: 'فني متكامل',
-    h1Sub:  'للشركات والمؤسسات',
-    desc:   'إعداد شبكات، صيانة دورية، ودعم تقني متواصل يضمن استمرارية عملك',
-    cta1:   { label: '📞 تواصل معنا', href: '#contact' },
-    cta2:   { label: '💼 خدماتنا',    href: '#services' },
+    badge:    'الشبكات والدعم الفني',
+    h1:       'دعم',
+    h1Grad:   'فني متكامل',
+    h1Sub:    'للشركات والمؤسسات',
+    desc:     'إعداد شبكات، صيانة دورية، ودعم تقني متواصل يضمن استمرارية عملك',
+    cta1:     { label: '📞 تواصل معنا', href: '#contact' },
+    cta2:     { label: '💼 خدماتنا',    href: '#services' },
+    imageSrc: '/assets/bec-hero.png',
+    imgScale: 2.8,
   },
 ];
 
@@ -120,7 +128,7 @@ interface HeroProps {
 }
 
 /* ─── Hero ────────────────────────────────────────────────── */
-export function HeroSection({ heroImageSrc }: HeroProps) {
+export function HeroSection(_props: HeroProps) {
   const [show,     setShow]     = useState(false);
   const [slideIdx, setSlideIdx] = useState(0);
   const [slideIn,  setSlideIn]  = useState(true);
@@ -230,19 +238,25 @@ export function HeroSection({ heroImageSrc }: HeroProps) {
                   filter:'blur(38px)', borderRadius:'50%',
                   pointerEvents:'none', zIndex:0,
                 }}/>
-                <img
-                  src={heroImageSrc || '/assets/bec-hero.png'}
-                  alt="BEC Products"
-                  className="h-float"
-                  style={{
-                    position:'relative', zIndex:1,
-                    width:'100%', height:620,
-                    objectFit:'contain',
-                    transform:'scale(2.8)',
-                    transformOrigin:'center center',
-                    filter:'drop-shadow(0 0 55px rgba(37,99,235,0.62)) drop-shadow(0 28px 60px rgba(29,78,216,0.40)) brightness(1.07) saturate(1.13)',
-                  }}
-                />
+                {/* Image fades with slide */}
+                <div style={{
+                  position:'relative', zIndex:1,
+                  transition: 'opacity 0.38s ease',
+                  opacity: slideIn ? 1 : 0,
+                }}>
+                  <img
+                    src={slide.imageSrc}
+                    alt={slide.badge}
+                    className="h-float"
+                    style={{
+                      width:'100%', height:620,
+                      objectFit:'contain',
+                      transform:`scale(${slide.imgScale})`,
+                      transformOrigin:'center center',
+                      filter:'drop-shadow(0 0 55px rgba(37,99,235,0.62)) drop-shadow(0 28px 60px rgba(29,78,216,0.40)) brightness(1.07) saturate(1.13)',
+                    }}
+                  />
+                </div>
               </div>
             </div>
 
