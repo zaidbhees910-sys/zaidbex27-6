@@ -33,7 +33,8 @@ export function EditableImage({ blockKey, defaultSrc, alt, className, style, img
       const res  = await fetch('/api/upload', { method: 'POST', body: form });
       const data = await res.json();
       if (data.url) {
-        await saveBlock(blockKey, data.url, 'image');
+        const ok = await saveBlock(blockKey, data.url, 'image');
+        if (!ok) setError('فشل الحفظ في قاعدة البيانات');
       } else {
         setError('فشل الرفع');
       }

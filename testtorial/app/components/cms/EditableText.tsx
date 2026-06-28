@@ -56,9 +56,10 @@ export function EditableText({
 
   const handleSave = async () => {
     setSaving(true);
-    await saveBlock(blockKey, draft);
+    const ok = await saveBlock(blockKey, draft);
     setSaving(false);
-    setEditing(false);
+    if (ok) setEditing(false);
+    /* on failure: keep popup open so user can retry */
   };
 
   const handleReset = async () => {
