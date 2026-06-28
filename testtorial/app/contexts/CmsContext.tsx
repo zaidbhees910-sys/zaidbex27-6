@@ -112,13 +112,11 @@ export function CmsProvider({
 
         if (res.status === 401) {
           setSaveError('انتهت جلسة الأدمن — يرجى تسجيل الدخول من جديد');
-          /* Redirect to login after short delay */
-          setTimeout(() => {
-            window.location.href = '/admin/login';
-          }, 2000);
+          setTimeout(() => { window.location.href = '/admin/login'; }, 2000);
         } else {
-          const body = await res.json().catch(() => ({}));
-          setSaveError((body as { error?: string }).error || 'فشل الحفظ');
+          const errBody = await res.json().catch(() => ({}));
+          const detail  = (errBody as { error?: string }).error || '';
+          setSaveError(`خطأ ${res.status}${detail ? ': ' + detail : ''}`);
         }
         return false;
       }
