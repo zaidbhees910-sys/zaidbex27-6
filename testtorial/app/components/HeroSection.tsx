@@ -131,10 +131,18 @@ interface HeroProps {
 }
 
 /* ─── Hero ────────────────────────────────────────────────── */
+
+interface DbSlide {
+  id: number; badge: string; h1: string; h1Grad: string; h1Sub: string;
+  desc: string; cta1Label: string; cta1Href: string; cta2Label: string;
+  cta2Href: string; imageSrc: string; imgScale: number;
+}
+
 export function HeroSection(_props: HeroProps) {
-  const [show,     setShow]     = useState(false);
-  const [slideIdx, setSlideIdx] = useState(0);
-  const [slideIn,  setSlideIn]  = useState(true);
+  const [show,      setShow]      = useState(false);
+  const [slideIdx,  setSlideIdx]  = useState(0);
+  const [slideIn,   setSlideIn]   = useState(true);
+  const [dbSlides,  setDbSlides]  = useState<DbSlide[] | null>(null);
   const intervalRef    = useRef<ReturnType<typeof setInterval> | null>(null);
   const slideToRef     = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { dir } = useLanguage();
@@ -142,21 +150,38 @@ export function HeroSection(_props: HeroProps) {
 
   useEffect(()=>{ const t=setTimeout(()=>setShow(true),80); return ()=>clearTimeout(t); },[]);
 
+  /* Load slides from DB — fall back to static SLIDES if empty */
+  useEffect(() => {
+    fetch('/api/hero-slides')
+      .then(r => r.json())
+      .then((d: DbSlide[]) => { if (Array.isArray(d) && d.length > 0) setDbSlides(d); })
+      .catch(() => {});
+  }, []);
+
+  const activeSlides = dbSlides ?? SLIDES.map((s, i) => ({
+    id: i,
+    badge: s.badge, h1: s.h1, h1Grad: s.h1Grad, h1Sub: s.h1Sub,
+    desc: s.desc,
+    cta1Label: s.cta1.label, cta1Href: s.cta1.href,
+    cta2Label: s.cta2.label, cta2Href: s.cta2.href,
+    imageSrc: s.imageSrc, imgScale: s.imgScale,
+  }));
+
   /* Auto-cycle every 5 s — paused in CMS edit mode so elements stay still */
   const startTimer = useCallback(() => {
     if (intervalRef.current) clearInterval(intervalRef.current);
     intervalRef.current = setInterval(() => {
       setSlideIn(false);
       slideToRef.current = setTimeout(() => {
-        setSlideIdx(i => (i + 1) % SLIDES.length);
+        setSlideIdx(i => (i + 1) % activeSlides.length);
         setSlideIn(true);
       }, 380);
     }, 5000);
-  }, []);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeSlides.length]);
 
   useEffect(() => {
     if (editMode) {
-      /* Stop cycling + ensure content is fully visible */
       if (intervalRef.current) clearInterval(intervalRef.current);
       if (slideToRef.current)  clearTimeout(slideToRef.current);
       setSlideIn(true);
@@ -177,7 +202,7 @@ export function HeroSection(_props: HeroProps) {
     startTimer();
   };
 
-  const rawSlide = SLIDES[slideIdx];
+  const rawSlide = activeSlides[Math.min(slideIdx, activeSlides.length - 1)];
   /* CMS overrides per slide */
   const sk = (k: string) => `hero.slide.${slideIdx}.${k}`;
   const slide = {
@@ -337,32 +362,36 @@ export function HeroSection(_props: HeroProps) {
 
                 {/* CTAs */}
                 <div style={{ display:'flex', flexWrap:'wrap', gap:12, marginBottom:'1.4rem', position:'relative', zIndex:1 }}>
-                  <a href={slide.cta1.href}
-                    style={{
-                      display:'inline-flex', alignItems:'center', gap:9,
-                      padding:'14px 28px', borderRadius:13, fontWeight:700, fontSize:'0.9rem',
-                      color:'#fff', textDecoration:'none',
-                      background:'linear-gradient(135deg,#2563eb,#1d4ed8)',
-                      boxShadow:'0 8px 26px rgba(37,99,235,0.45)',
-                    }}>
-                    {slide.cta1.label}
-                  </a>
-                  <a href={slide.cta2.href}
-                    style={{
-                      display:'inline-flex', alignItems:'center', gap:9,
-                      padding:'14px 28px', borderRadius:13, fontWeight:700, fontSize:'0.9rem',
-                      color:'rgba(255,255,255,0.82)', textDecoration:'none',
-                      background:'rgba(255,255,255,0.06)',
-                      backdropFilter:'blur(10px)', WebkitBackdropFilter:'blur(10px)',
-                      border:'1px solid rgba(255,255,255,0.14)',
-                    }}>
-                    {slide.cta2.label}
-                  </a>
+                  {slide.cta1Label && (
+                    <a href={slide.cta1Href || '#'}
+                      style={{
+                        display:'inline-flex', alignItems:'center', gap:9,
+                        padding:'14px 28px', borderRadius:13, fontWeight:700, fontSize:'0.9rem',
+                        color:'#fff', textDecoration:'none',
+                        background:'linear-gradient(135deg,#2563eb,#1d4ed8)',
+                        boxShadow:'0 8px 26px rgba(37,99,235,0.45)',
+                      }}>
+                      {slide.cta1Label}
+                    </a>
+                  )}
+                  {slide.cta2Label && (
+                    <a href={slide.cta2Href || '#'}
+                      style={{
+                        display:'inline-flex', alignItems:'center', gap:9,
+                        padding:'14px 28px', borderRadius:13, fontWeight:700, fontSize:'0.9rem',
+                        color:'rgba(255,255,255,0.82)', textDecoration:'none',
+                        background:'rgba(255,255,255,0.06)',
+                        backdropFilter:'blur(10px)', WebkitBackdropFilter:'blur(10px)',
+                        border:'1px solid rgba(255,255,255,0.14)',
+                      }}>
+                      {slide.cta2Label}
+                    </a>
+                  )}
                 </div>
 
                 {/* Slide indicators */}
                 <div style={{ display:'flex', gap:8, marginBottom:'1.8rem' }}>
-                  {SLIDES.map((_, i) => (
+                  {activeSlides.map((_, i) => (
                     <button
                       key={i}
                       onClick={() => goToSlide(i)}

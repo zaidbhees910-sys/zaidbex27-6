@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import ImageUpload from '../components/ImageUpload';
 import { invalidateProductsCache } from '../../lib/products-cache';
+import HeroSlidesSection from './HeroSlidesSection';
 
 interface AttributeOption {
   id: number;
@@ -490,6 +491,9 @@ export default function AdminPage() {
             </div>
           ))}
         </div>
+
+        {/* ════ شرائح Hero ════ */}
+        <HeroSlidesSection />
 
         {/* ════ استكشاف المنتجات ════ */}
         <div className="bg-white rounded-xl shadow-md border border-gray-100 mb-8 overflow-hidden">
