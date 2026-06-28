@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Logo from './components/Logo';
@@ -254,6 +254,14 @@ export default function Home() {
   const displayCategories = homepageData.categories.length > 0 ? homepageData.categories : DEFAULT_CATEGORIES;
   const s = homepageData.settings;
 
+  // Helper — wraps any tr() call with inline CMS editing
+  const TrE = ({ k, tag, className, style, multiline }: {
+    k: string; tag?: React.ElementType; className?: string;
+    style?: React.CSSProperties; multiline?: boolean;
+  }) => (
+    <EditableText blockKey={`pg.${k}`} defaultValue={tr(k)} tag={tag} className={className} style={style} multiline={multiline} />
+  );
+
   if (loading) {
     return (
       <>
@@ -310,12 +318,10 @@ export default function Home() {
             {/* Header */}
             <div className="text-center mb-16">
               <span className="inline-block text-[11px] font-bold text-blue-600 uppercase tracking-[0.2em] bg-blue-50 border border-blue-100 px-5 py-2 rounded-full mb-5">
-                خدماتنا
+                <EditableText blockKey="sec.cards.badge" defaultValue="خدماتنا" />
               </span>
-              <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-4 leading-tight">حلولنا الرئيسية</h2>
-              <p className="text-gray-400 text-base max-w-sm mx-auto leading-relaxed">
-                حلول تقنية متكاملة للشركات والأفراد
-              </p>
+              <EditableText blockKey="sec.cards.h2" defaultValue="حلولنا الرئيسية" tag="h2" className="text-4xl md:text-5xl font-black text-gray-900 mb-4 leading-tight" />
+              <EditableText blockKey="sec.cards.desc" defaultValue="حلول تقنية متكاملة للشركات والأفراد" tag="p" className="text-gray-400 text-base max-w-sm mx-auto leading-relaxed" />
             </div>
 
             {/* ── 3 vertical cards side by side ── */}
@@ -324,7 +330,7 @@ export default function Home() {
               {/* Card 1 — Printing */}
               <div className="group relative bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 flex flex-col">
                 <div className="h-52 overflow-hidden relative">
-                  <img src="/assets/card-printing.png" alt="" className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                  <EditableImage blockKey="card.print.img" defaultSrc="/assets/card-printing.png" imgStyle={{ position:'absolute', inset:0, width:'100%', height:'100%', objectFit:'cover' }} className="group-hover:scale-110 transition-transform duration-700" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </div>
                 <div className="flex flex-col flex-1 p-7">
@@ -338,7 +344,7 @@ export default function Home() {
                   <a href="#printer-card"
                     className="inline-flex items-center gap-2 text-blue-600 font-bold text-sm group-hover:gap-3 transition-all duration-300">
                     <svg className="w-4 h-4 rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7"/></svg>
-                    اعرف المزيد
+                    <EditableText blockKey="card.print.cta" defaultValue="اعرف المزيد" />
                   </a>
                 </div>
               </div>
@@ -346,7 +352,7 @@ export default function Home() {
               {/* Card 2 — Gaming */}
               <div className="group relative bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 flex flex-col">
                 <div className="h-52 overflow-hidden relative">
-                  <img src="/assets/card-gaming.png" alt="" className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                  <EditableImage blockKey="card.gaming.img" defaultSrc="/assets/card-gaming.png" imgStyle={{ position:'absolute', inset:0, width:'100%', height:'100%', objectFit:'cover' }} className="group-hover:scale-110 transition-transform duration-700" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </div>
                 <div className="flex flex-col flex-1 p-7">
@@ -360,7 +366,7 @@ export default function Home() {
                   <Link href="/gaming-build"
                     className="inline-flex items-center gap-2 text-purple-600 font-bold text-sm group-hover:gap-3 transition-all duration-300">
                     <svg className="w-4 h-4 rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7"/></svg>
-                    اطلب جهازك
+                    <EditableText blockKey="card.gaming.cta" defaultValue="اطلب جهازك" />
                   </Link>
                 </div>
               </div>
@@ -368,7 +374,7 @@ export default function Home() {
               {/* Card 3 — Electronics */}
               <div className="group relative bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 flex flex-col">
                 <div className="h-52 overflow-hidden relative">
-                  <img src="/assets/card-electronics.png" alt="" className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                  <EditableImage blockKey="card.devices.img" defaultSrc="/assets/card-electronics.png" imgStyle={{ position:'absolute', inset:0, width:'100%', height:'100%', objectFit:'cover' }} className="group-hover:scale-110 transition-transform duration-700" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </div>
                 <div className="flex flex-col flex-1 p-7">
@@ -382,7 +388,7 @@ export default function Home() {
                   <Link href="/products"
                     className="inline-flex items-center gap-2 text-cyan-600 font-bold text-sm group-hover:gap-3 transition-all duration-300">
                     <svg className="w-4 h-4 rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7"/></svg>
-                    تصفح المنتجات
+                    <EditableText blockKey="card.devices.cta" defaultValue="تصفح المنتجات" />
                   </Link>
                 </div>
               </div>
@@ -409,15 +415,15 @@ export default function Home() {
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-500 opacity-50" />
                     <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-600" />
                   </span>
-                  <span className="text-blue-700 text-xs font-bold tracking-[0.16em] uppercase">{tr('ink_exclusive')}</span>
+                  <span className="text-blue-700 text-xs font-bold tracking-[0.16em] uppercase"><TrE k="ink_exclusive" /></span>
                 </div>
                 <div>
                   <h2 className="font-black leading-[1.1] tracking-tight">
-                    <span className="block text-gray-900 text-4xl md:text-5xl lg:text-[3.2rem]">{tr('ink_h1')}</span>
+                    <span className="block text-gray-900 text-4xl md:text-5xl lg:text-[3.2rem]"><TrE k="ink_h1" /></span>
                     <span className="block text-4xl md:text-5xl lg:text-[3.2rem] mt-1">
-                      <span className="text-gray-900">{tr('ink_h2a')}</span>
+                      <span className="text-gray-900"><TrE k="ink_h2a" /></span>
                       <span className="text-transparent bg-clip-text" style={{ backgroundImage: 'linear-gradient(90deg,#2563eb 0%,#0ea5e9 55%,#7c3aed 100%)' }}>
-                        {tr('ink_h2b')}
+                        <TrE k="ink_h2b" />
                       </span>
                     </span>
                   </h2>
@@ -425,16 +431,16 @@ export default function Home() {
                     <div className="h-[3px] w-20 rounded-full bg-gradient-to-l from-blue-600 to-blue-400" />
                   </div>
                 </div>
-                <p className="text-gray-500 text-base leading-relaxed max-w-[420px]">{tr('ink_desc')}</p>
+                <p className="text-gray-500 text-base leading-relaxed max-w-[420px]"><TrE k="ink_desc" multiline /></p>
                 <div className="space-y-3">
-                  {[tr('ink_feat1'), tr('ink_feat2'), tr('ink_feat3')].map(f => (
-                    <div key={f} className="flex items-center gap-3 text-gray-700 text-sm">
+                  {(['ink_feat1', 'ink_feat2', 'ink_feat3'] as const).map(featKey => (
+                    <div key={featKey} className="flex items-center gap-3 text-gray-700 text-sm">
                       <span className="flex-shrink-0 w-[22px] h-[22px] rounded-full flex items-center justify-center bg-blue-50 border border-blue-200">
                         <svg className="w-3 h-3 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7"/>
                         </svg>
                       </span>
-                      {f}
+                      <TrE k={featKey} />
                     </div>
                   ))}
                 </div>
@@ -452,14 +458,14 @@ export default function Home() {
                 <div className="flex flex-wrap gap-3">
                   <Link href="/products?type=Ink"
                     className="inline-flex items-center gap-2.5 bg-blue-600 text-white px-7 py-3.5 rounded-2xl font-bold text-sm hover:bg-blue-700 transition-all duration-300 hover:-translate-y-0.5 shadow-lg shadow-blue-600/25">
-                    {tr('ink_cta1')}
+                    <TrE k="ink_cta1" />
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7"/>
                     </svg>
                   </Link>
                   <button onClick={scrollToContact}
                     className="inline-flex items-center gap-2.5 border border-blue-300 bg-blue-50 text-blue-700 px-7 py-3.5 rounded-2xl font-bold text-sm hover:bg-blue-100 hover:border-blue-400 transition-all duration-300 hover:-translate-y-0.5">
-                    {tr('ink_cta2')}
+                    <TrE k="ink_cta2" />
                   </button>
                 </div>
               </div>
@@ -477,12 +483,15 @@ export default function Home() {
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-500 opacity-50" />
                         <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-blue-600" />
                       </span>
-                      حبر BEC الأصلي
+                      <EditableText blockKey="ink.badge" defaultValue="حبر BEC الأصلي" />
                     </div>
-                    <img src="/assets/toner-brand.png" alt="BEC TONER"
+                    <EditableImage
+                      blockKey="ink.toner.img"
+                      defaultSrc="/assets/toner-brand.png"
+                      alt="BEC TONER"
                       className="ink-float relative z-10 object-contain select-none"
-                      style={{ width:'230px', height:'230px', filter:'drop-shadow(0 6px 20px rgba(0,0,0,0.10)) drop-shadow(0 2px 8px rgba(37,99,235,0.07))' }}
-                      draggable={false} />
+                      imgStyle={{ width:'230px', height:'230px', filter:'drop-shadow(0 6px 20px rgba(0,0,0,0.10)) drop-shadow(0 2px 8px rgba(37,99,235,0.07))' }}
+                    />
                     <div className="relative z-10 w-full mt-3 pt-3 border-t border-gray-100 text-center">
                       <p className="font-black text-[1.1rem] tracking-[0.22em] text-gray-900">BEC<span className="text-transparent bg-clip-text" style={{ backgroundImage:'linear-gradient(90deg,#2563eb,#7c3aed)' }}> TONER</span></p>
                       <div className="flex justify-center gap-5 mt-1.5">
@@ -526,11 +535,11 @@ export default function Home() {
 <div className="relative min-h-[500px] rounded-3xl overflow-hidden bg-[#07030f] border border-purple-500/20">
 
 
-<img
-  src="https://images.unsplash.com/photo-1614179924047-e1ab49a0a0cf?auto=format&fit=crop&w=1200&q=85"
-  alt=""
+<EditableImage
+  blockKey="gaming.bg.img"
+  defaultSrc="https://images.unsplash.com/photo-1614179924047-e1ab49a0a0cf?auto=format&fit=crop&w=1200&q=85"
   className="absolute left-0 top-0 w-[75%] h-full object-cover object-center"
-  style={{
+  imgStyle={{
     WebkitMaskImage:'linear-gradient(to right, black 0%, black 48%, rgba(0,0,0,0.3) 72%, transparent 92%)',
     maskImage:'linear-gradient(to right, black 0%, black 48%, rgba(0,0,0,0.3) 72%, transparent 92%)',
     filter:'brightness(0.72) saturate(1.3)',
@@ -544,19 +553,19 @@ export default function Home() {
 
 
 <span className="w-fit mb-6 px-4 py-2 rounded-full border border-purple-400/40 bg-purple-500/10 text-purple-300 text-sm">
-● تجميع مخصص
+<EditableText blockKey="gaming.badge" defaultValue="● تجميع مخصص" />
 </span>
 
 
 
 <h2 className="text-white text-5xl font-black leading-tight">
 
-ابني جهازك
+<EditableText blockKey="gaming.h2.line1" defaultValue="ابني جهازك" />
 
 <br/>
 
 <span className="text-purple-400">
-كما تريد
+<EditableText blockKey="gaming.h2.line2" defaultValue="كما تريد" style={{ color:'inherit' }} />
 </span>
 
 </h2>
@@ -564,7 +573,7 @@ export default function Home() {
 
 
 <p className="text-white/60 mt-5 max-w-sm">
-أخبرنا بالمواصفات المطلوبة ونجهز لك التجميع خلال فترة قصيرة
+<EditableText blockKey="gaming.desc" defaultValue="أخبرنا بالمواصفات المطلوبة ونجهز لك التجميع خلال فترة قصيرة" multiline />
 </p>
 
 
@@ -573,17 +582,17 @@ export default function Home() {
 
 
 <span className="px-5 py-3 rounded-xl border border-purple-500/50 bg-purple-500/20 text-white">
-🎮 Gaming
+<EditableText blockKey="gaming.tag1" defaultValue="🎮 Gaming" />
 </span>
 
 
 <span className="px-5 py-3 rounded-xl border border-pink-500/40 bg-pink-500/10 text-white">
-🎬 مونتاج
+<EditableText blockKey="gaming.tag2" defaultValue="🎬 مونتاج" />
 </span>
 
 
 <span className="px-5 py-3 rounded-xl border border-blue-500/40 bg-blue-500/10 text-white">
-💼 عمل ودراسة
+<EditableText blockKey="gaming.tag3" defaultValue="💼 عمل ودراسة" />
 </span>
 
 
@@ -607,7 +616,7 @@ transition-colors
 duration-200
 ">
 
-✨ اعرف المزيد
+<EditableText blockKey="gaming.cta" defaultValue="✨ اعرف المزيد" />
 
 </Link>
 
@@ -627,11 +636,11 @@ duration-200
 <div id="printer-card" className="relative min-h-[500px] rounded-3xl overflow-hidden bg-white border border-gray-100 shadow-sm">
 
   {/* صورة الطابعة — يسار، تتلاشى عند 65% */}
-  <img
-    src="https://images.unsplash.com/photo-1650094980833-7373de26feb6?auto=format&fit=crop&w=1000&q=90"
-    alt=""
+  <EditableImage
+    blockKey="printer.bg.img"
+    defaultSrc="https://images.unsplash.com/photo-1650094980833-7373de26feb6?auto=format&fit=crop&w=1000&q=90"
     className="absolute inset-0 w-full h-full object-cover object-left pointer-events-none"
-    style={{
+    imgStyle={{
       WebkitMaskImage:'linear-gradient(to right, black 0%, black 50%, transparent 72%)',
       maskImage:'linear-gradient(to right, black 0%, black 50%, transparent 72%)',
     }}
@@ -641,19 +650,23 @@ duration-200
   <div className="absolute inset-y-0 right-0 w-[46%] z-10 flex flex-col justify-center px-8 py-12 text-right">
     <span className="mb-4 inline-flex items-center justify-end gap-2 text-xs font-bold text-blue-600">
       <span className="w-1.5 h-1.5 rounded-full bg-blue-500 flex-shrink-0"/>
-      حلول B2B للشركات
+      <EditableText blockKey="printer.badge" defaultValue="حلول B2B للشركات" />
     </span>
     <h2 className="text-[#071038] font-black leading-[1.1] mb-3" style={{ fontSize:'clamp(1.4rem,2.2vw,2.2rem)' }}>
-      طابعات وماكينات تصوير<br/>
-      <span className="text-blue-600">للشركات والمكاتب</span>
+      <EditableText blockKey="printer.h2" defaultValue="طابعات وماكينات تصوير للشركات والمكاتب" tag="span" multiline />
     </h2>
     <p className="text-gray-500 text-sm leading-relaxed mb-5">
-      نوفر طابعات وماكينات تصوير<br/>مع أحبار وصيانة وخيارات إيجار مرنة
+      <EditableText blockKey="printer.desc" defaultValue="نوفر طابعات وماكينات تصوير مع أحبار وصيانة وخيارات إيجار مرنة" multiline />
     </p>
     <ul className="space-y-2.5 mb-7">
-      {['بيع وتأجير طابعات وماكينات تصوير','توفير أحبار ومواد تشغيل أصلية','صيانة ودعم فني','حلول مناسبة للمكاتب والشركات'].map(item => (
-        <li key={item} className="flex items-center justify-end gap-2.5 text-gray-700 text-sm">
-          {item}
+      {([
+        { key: 'printer.li0', defaultValue: 'بيع وتأجير طابعات وماكينات تصوير' },
+        { key: 'printer.li1', defaultValue: 'توفير أحبار ومواد تشغيل أصلية' },
+        { key: 'printer.li2', defaultValue: 'صيانة ودعم فني' },
+        { key: 'printer.li3', defaultValue: 'حلول مناسبة للمكاتب والشركات' },
+      ]).map(({ key, defaultValue }) => (
+        <li key={key} className="flex items-center justify-end gap-2.5 text-gray-700 text-sm">
+          <EditableText blockKey={key} defaultValue={defaultValue} />
           <span className="w-4 h-4 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0">
             <svg className="w-2 h-2 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3.5} d="M5 13l4 4L19 7"/>
@@ -668,13 +681,13 @@ duration-200
         className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-blue-600 text-white font-bold text-sm hover:-translate-y-0.5 transition-all duration-200"
         style={{ boxShadow:'0 5px 18px rgba(37,99,235,0.35)' }}
       >
-        عرض الطابعات 🖨️
+        <EditableText blockKey="printer.cta1" defaultValue="عرض الطابعات 🖨️" />
       </Link>
       <a
         href="#contact"
         className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl border border-blue-300 text-blue-600 font-bold text-sm hover:-translate-y-0.5 hover:bg-blue-50 transition-all duration-200"
       >
-        تواصل للإيجار 📞
+        <EditableText blockKey="printer.cta2" defaultValue="تواصل للإيجار 📞" />
       </a>
     </div>
   </div>
@@ -691,11 +704,9 @@ duration-200
           <div className="max-w-[1400px] mx-auto">
             <div className="text-center mb-12">
               <span className="inline-block text-[11px] font-bold text-blue-600 uppercase tracking-widest bg-blue-50 border border-blue-100 px-4 py-1.5 rounded-full mb-4">
-                استكشف
+                <EditableText blockKey="sec.cats.badge" defaultValue="استكشف" />
               </span>
-              <h2 className="text-3xl md:text-4xl font-black text-gray-900 mb-3 leading-tight">
-                تصفح حسب القسم
-              </h2>
+              <EditableText blockKey="sec.cats.h2" defaultValue="تصفح حسب القسم" tag="h2" className="text-3xl md:text-4xl font-black text-gray-900 mb-3 leading-tight" />
             </div>
 
             <div className="flex gap-5 overflow-x-auto snap-x snap-mandatory scrollbar-hide pb-2 lg:grid lg:grid-cols-4 lg:overflow-visible lg:pb-0">
@@ -704,7 +715,7 @@ duration-200
 
             <div className="hidden lg:flex justify-center mt-10">
               <Link href="/products" className="inline-flex items-center gap-2 text-sm font-semibold text-gray-500 hover:text-blue-600 border border-gray-200 hover:border-blue-300 px-6 py-3 rounded-2xl transition-all duration-200 hover:bg-blue-50">
-                عرض جميع المنتجات
+                <EditableText blockKey="sec.cats.viewall" defaultValue="عرض جميع المنتجات" />
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7"/>
                 </svg>
@@ -718,11 +729,11 @@ duration-200
           <div className="max-w-[1400px] mx-auto">
             <div className="flex items-end justify-between mb-10">
               <div>
-                <span className="text-blue-600 font-semibold text-sm uppercase tracking-wider mb-2 block">{tr('sec_products_tag')}</span>
-                <h2 className="text-4xl font-bold text-gray-900">{tr('sec_products_h2')}</h2>
+                <span className="text-blue-600 font-semibold text-sm uppercase tracking-wider mb-2 block"><TrE k="sec_products_tag" /></span>
+                <h2 className="text-4xl font-bold text-gray-900"><TrE k="sec_products_h2" /></h2>
               </div>
               <Link href="/products" className="hidden md:inline-flex items-center gap-2 text-blue-600 font-semibold text-sm hover:gap-3 transition-all duration-300">
-                {tr('viewall')}
+                <TrE k="viewall" />
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7"/>
                 </svg>
@@ -831,15 +842,15 @@ duration-200
         <section id="about" className="py-20 px-4 md:px-8 bg-white border-b border-gray-100">
           <div className="max-w-[1400px] mx-auto">
             <div className="text-center mb-12">
-              <span className="text-blue-600 font-semibold text-sm uppercase tracking-wider mb-2 block">{tr('about_tag')}</span>
+              <span className="text-blue-600 font-semibold text-sm uppercase tracking-wider mb-2 block"><TrE k="about_tag" /></span>
               <h2 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight">
-                {tr('about_h2_1')} <span className="text-blue-600">{tr('about_h2_2')}</span>
+                <TrE k="about_h2_1" /> <span className="text-blue-600"><TrE k="about_h2_2" /></span>
               </h2>
               <div className="w-20 h-1 bg-blue-600 mx-auto mt-4 rounded-full" />
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
               <div className="space-y-6">
-                <p className="text-gray-600 text-lg leading-relaxed">{tr('about_desc')}</p>
+                <p className="text-gray-600 text-lg leading-relaxed"><TrE k="about_desc" multiline /></p>
                 <div className="flex items-start gap-3 bg-white rounded-xl p-4 shadow-sm">
                   <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
                     <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -848,8 +859,8 @@ duration-200
                     </svg>
                   </div>
                   <div>
-                    <h4 className="font-bold text-gray-900 mb-1">{tr('about_address_title')}</h4>
-                    <p className="text-gray-600">{tr('about_address')}</p>
+                    <h4 className="font-bold text-gray-900 mb-1"><TrE k="about_address_title" /></h4>
+                    <p className="text-gray-600"><TrE k="about_address" /></p>
                   </div>
                 </div>
                 <div className="space-y-4">
@@ -861,8 +872,8 @@ duration-200
                         </svg>
                       </div>
                       <div>
-                        <h4 className="font-bold text-gray-900 mb-1">{tr(`about_feat${n}_title`)}</h4>
-                        <p className="text-gray-600">{tr(`about_feat${n}_desc`)}</p>
+                        <h4 className="font-bold text-gray-900 mb-1"><TrE k={`about_feat${n}_title`} /></h4>
+                        <p className="text-gray-600"><TrE k={`about_feat${n}_desc`} /></p>
                       </div>
                     </div>
                   ))}
@@ -889,7 +900,7 @@ duration-200
                       </div>
                     ))}
                   </div>
-                  <p className="text-blue-100 leading-relaxed text-center pt-4 border-t border-blue-400/30 relative">{tr('stat_mission')}</p>
+                  <p className="text-blue-100 leading-relaxed text-center pt-4 border-t border-blue-400/30 relative"><TrE k="stat_mission" /></p>
                 </div>
               </div>
             </div>
@@ -902,9 +913,9 @@ duration-200
         <section id="services" className="py-20 px-4 md:px-8 bg-white border-b border-gray-100">
           <div className="max-w-[1400px] mx-auto">
             <div className="text-center mb-16">
-              <span className="text-blue-600 font-semibold text-sm uppercase tracking-wider mb-2 block">{tr('services_tag')}</span>
-              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">{tr('services_h2')}</h2>
-              <p className="text-gray-500 text-lg max-w-3xl mx-auto">{tr('services_desc')}</p>
+              <span className="text-blue-600 font-semibold text-sm uppercase tracking-wider mb-2 block"><TrE k="services_tag" /></span>
+              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4"><TrE k="services_h2" /></h2>
+              <p className="text-gray-500 text-lg max-w-3xl mx-auto"><TrE k="services_desc" /></p>
               <div className="w-24 h-1 bg-blue-600 mx-auto mt-6 rounded-full" />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -913,8 +924,8 @@ duration-200
                   <div className="w-20 h-20 bg-white text-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-blue-600 group-hover:text-white transition-all duration-300 shadow-sm">
                     <span className="text-3xl">{SERVICE_ICONS[i]}</span>
                   </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-3">{tr(nameKey)}</h3>
-                  <p className="text-gray-600 leading-relaxed">{tr(descKey)}</p>
+                  <h3 className="text-xl font-bold text-gray-900 mb-3"><TrE k={nameKey} /></h3>
+                  <p className="text-gray-600 leading-relaxed"><TrE k={descKey} /></p>
                 </div>
               ))}
             </div>
@@ -927,9 +938,9 @@ duration-200
         <section id="contact" className="py-24 px-4 md:px-8 bg-[#f0f5ff]">
           <div className="max-w-[1400px] mx-auto">
             <div className="text-center mb-16">
-              <span className="text-blue-600 font-semibold text-sm uppercase tracking-wider mb-2 block">{tr('contact_tag')}</span>
-              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">{tr('contact_h2')}</h2>
-              <p className="text-gray-500 text-lg max-w-3xl mx-auto">{tr('contact_desc')}</p>
+              <span className="text-blue-600 font-semibold text-sm uppercase tracking-wider mb-2 block"><TrE k="contact_tag" /></span>
+              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4"><TrE k="contact_h2" /></h2>
+              <p className="text-gray-500 text-lg max-w-3xl mx-auto"><TrE k="contact_desc" /></p>
               <div className="w-24 h-1 bg-blue-600 mx-auto mt-6 rounded-full" />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
@@ -940,10 +951,10 @@ duration-200
                     <path d="M16.634 14.345c-.261-.131-1.54-.76-1.78-.847-.239-.087-.413-.131-.586.131-.173.262-.674.847-.826 1.021-.152.174-.304.196-.565.065-.261-.131-1.102-.406-2.099-1.297-.776-.693-1.3-1.549-1.452-1.812-.152-.262-.016-.403.114-.533.117-.117.261-.304.391-.456.13-.152.174-.261.261-.435.087-.174.043-.327-.022-.457-.065-.131-.586-1.414-.803-1.936-.212-.509-.427-.44-.586-.448-.152-.007-.326-.008-.5-.008-.174 0-.456.065-.695.326-.239.262-.913.893-.913 2.179s.936 2.528 1.066 2.702c.13.174 1.837 2.81 4.456 3.937.623.268 1.109.428 1.488.548.625.196 1.194.168 1.644.102.502-.074 1.54-.63 1.757-1.238.217-.608.217-1.129.152-1.238-.065-.109-.239-.174-.5-.305z"/>
                   </svg>
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-3">{tr('wa_title')}</h3>
-                <p className="text-gray-500 mb-6">{tr('wa_desc')}</p>
+                <h3 className="text-2xl font-bold text-gray-900 mb-3"><TrE k="wa_title" /></h3>
+                <p className="text-gray-500 mb-6"><TrE k="wa_desc" /></p>
                 <a href="https://wa.me/972568800999?text=مرحباً،%20أحتاج%20لمساعدة" target="_blank" className="inline-flex items-center gap-2 bg-[#25D366] text-white px-6 py-3 rounded-full hover:bg-[#20b859] transition-all duration-300 font-semibold">
-                  {tr('wa_btn')}
+                  <TrE k="wa_btn" />
                 </a>
               </div>
               <div className="bg-white rounded-3xl p-8 flex flex-col items-center text-center hover:shadow-2xl transition-all duration-500 group">
@@ -952,10 +963,10 @@ duration-200
                     <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m16.5 0L12 12.75 4.5 6.75m16.5 0H4.5"/>
                   </svg>
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-3">{tr('email_title')}</h3>
-                <p className="text-gray-500 mb-6">{tr('email_desc')}</p>
+                <h3 className="text-2xl font-bold text-gray-900 mb-3"><TrE k="email_title" /></h3>
+                <p className="text-gray-500 mb-6"><TrE k="email_desc" /></p>
                 <a href="https://mail.google.com/mail/?view=cm&fs=1&to=zaidbhees910@gmail.com&su=استفسار%20عن%20منتجات%20BEC" target="_blank" className="inline-flex items-center gap-2 bg-red-500 text-white px-6 py-3 rounded-full hover:bg-red-600 transition-all duration-300 font-semibold">
-                  {tr('email_btn')}
+                  <TrE k="email_btn" />
                 </a>
               </div>
               <div className="bg-white rounded-3xl p-8 flex flex-col items-center text-center hover:shadow-2xl transition-all duration-500 group">
@@ -964,10 +975,10 @@ duration-200
                     <path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.879V14.89h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v7.989C18.343 21.129 22 16.99 22 12z"/>
                   </svg>
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-3">{tr('fb_title')}</h3>
-                <p className="text-gray-500 mb-6">{tr('fb_desc')}</p>
+                <h3 className="text-2xl font-bold text-gray-900 mb-3"><TrE k="fb_title" /></h3>
+                <p className="text-gray-500 mb-6"><TrE k="fb_desc" /></p>
                 <a href="https://www.facebook.com/banyaselectronics" target="_blank" className="inline-flex items-center gap-2 bg-[#1877F2] text-white px-6 py-3 rounded-full hover:bg-[#0f5db4] transition-all duration-300 font-semibold">
-                  {tr('fb_btn')}
+                  <TrE k="fb_btn" />
                 </a>
               </div>
             </div>
@@ -981,31 +992,31 @@ duration-200
             <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
               <div>
                 <Logo variant="light" size="sm" />
-                <p className="mt-4 text-sm leading-relaxed">{tr('footer_desc')}</p>
+                <p className="mt-4 text-sm leading-relaxed"><TrE k="footer_desc" /></p>
               </div>
               <div>
-                <h4 className="text-white font-bold mb-4">{tr('footer_quicklinks')}</h4>
+                <h4 className="text-white font-bold mb-4"><TrE k="footer_quicklinks" /></h4>
                 <ul className="space-y-2">
-                  <li><Link href="/#bec-ink"           className="hover:text-white transition">{tr('footer_ink')}</Link></li>
-                  <li><Link href="/#featured-products" className="hover:text-white transition">{tr('products')}</Link></li>
-                  <li><Link href="/#services"          className="hover:text-white transition">{tr('services')}</Link></li>
-                  <li><Link href="/#about"             className="hover:text-white transition">{tr('about')}</Link></li>
-                  <li><Link href="/#contact"           className="hover:text-white transition">{tr('contact')}</Link></li>
+                  <li><Link href="/#bec-ink"           className="hover:text-white transition"><TrE k="footer_ink" /></Link></li>
+                  <li><Link href="/#featured-products" className="hover:text-white transition"><TrE k="products" /></Link></li>
+                  <li><Link href="/#services"          className="hover:text-white transition"><TrE k="services" /></Link></li>
+                  <li><Link href="/#about"             className="hover:text-white transition"><TrE k="about" /></Link></li>
+                  <li><Link href="/#contact"           className="hover:text-white transition"><TrE k="contact" /></Link></li>
                 </ul>
               </div>
               <div>
-                <h4 className="text-white font-bold mb-4">{tr('footer_our_services')}</h4>
+                <h4 className="text-white font-bold mb-4"><TrE k="footer_our_services" /></h4>
                 <ul className="space-y-2">
                   {['svc1_name','svc2_name','svc3_name','svc4_name'].map(k => (
                     <li key={k} className="flex items-center gap-2">
                       <span className="w-1.5 h-1.5 bg-blue-500 rounded-full flex-shrink-0" />
-                      {tr(k)}
+                      <TrE k={k} />
                     </li>
                   ))}
                 </ul>
               </div>
               <div>
-                <h4 className="text-white font-bold mb-4">{tr('footer_follow')}</h4>
+                <h4 className="text-white font-bold mb-4"><TrE k="footer_follow" /></h4>
                 <div className="flex gap-4">
                   <a href="https://www.facebook.com/banyaselectronics" target="_blank" className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-blue-600 transition">
                     <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -1016,7 +1027,7 @@ duration-200
               </div>
             </div>
             <div className="text-center pt-8 border-t border-gray-800">
-              <p>© {new Date().getFullYear()} {COMPANY_NAME}. {tr('footer_copyright')}</p>
+              <p>© {new Date().getFullYear()} {COMPANY_NAME}. <TrE k="footer_copyright" /></p>
             </div>
           </div>
         </footer>
