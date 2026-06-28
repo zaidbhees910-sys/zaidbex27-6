@@ -465,7 +465,13 @@ export default function AdminPage() {
       <div className="bg-white shadow-md border-b sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
           <h1 className="text-2xl font-bold text-gray-800">لوحة التحكم — BEC</h1>
-          <button onClick={handleLogout} className="px-4 py-2 text-red-700 bg-red-50 hover:bg-red-100 rounded-lg transition font-medium">تسجيل الخروج</button>
+          <div className="flex items-center gap-3">
+            <a href="/?edit=1" target="_blank"
+              className="px-4 py-2 text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-lg transition font-medium flex items-center gap-2">
+              ✏️ تعديل الصفحة الرئيسية
+            </a>
+            <button onClick={handleLogout} className="px-4 py-2 text-red-700 bg-red-50 hover:bg-red-100 rounded-lg transition font-medium">تسجيل الخروج</button>
+          </div>
         </div>
       </div>
 

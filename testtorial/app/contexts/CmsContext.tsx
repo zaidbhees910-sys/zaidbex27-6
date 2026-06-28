@@ -30,9 +30,9 @@ const CmsContext = createContext<CmsContextType>({
 });
 
 /* ─── Provider ───────────────────────────────────────────── */
-export function CmsProvider({ children }: { children: ReactNode }) {
+export function CmsProvider({ children, initialEditMode = false }: { children: ReactNode; initialEditMode?: boolean }) {
   const [isAdmin,  setIsAdmin]  = useState(false);
-  const [editMode, setEditMode] = useState(false);
+  const [editMode, setEditMode] = useState(initialEditMode);
   const [blocks,   setBlocks]   = useState<Record<string, string>>({});
   const [unsaved,  setUnsaved]  = useState(0);
   const inFlight = useRef(new Set<string>());

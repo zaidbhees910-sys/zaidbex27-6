@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Logo from './components/Logo';
 import Navbar from './components/Navbar';
@@ -10,7 +11,6 @@ import { COMPANY_NAME } from './constants/company';
 import { useLanguage } from './contexts/LanguageContext';
 import { useAutoTranslateBatch } from './hooks/useAutoTranslate';
 import { CmsProvider } from './contexts/CmsContext';
-import { CmsToolbar, CmsPageSpacer } from './components/cms/CmsToolbar';
 import { EditableText } from './components/cms/EditableText';
 import { EditableImage } from './components/cms/EditableImage';
 import { EditableSection } from './components/cms/EditableSection';
@@ -139,6 +139,9 @@ function PromoBanner({ banner }: { banner: HpBanner }) {
 
 /* ─── Main Component ─────────────────────────────────────── */
 export default function Home() {
+  const searchParams  = useSearchParams();
+  const cmsEditMode   = searchParams.get('edit') === '1';
+
   const [products,        setProducts]        = useState<Product[]>([]);
   const [homepageData,    setHomepageData]    = useState<HomepageData>({ settings: {}, banners: [], categories: [] });
   const [loading,         setLoading]         = useState(true);
@@ -261,11 +264,31 @@ export default function Home() {
   }
 
   return (
-    <CmsProvider>
-      <CmsToolbar />
+    <CmsProvider initialEditMode={cmsEditMode}>
+      {/* Minimal floating exit bar — only shown when ?edit=1 */}
+      {cmsEditMode && (
+        <div dir="rtl" style={{
+          position:'fixed', top:0, right:0, left:0, zIndex:99999,
+          height:44, display:'flex', alignItems:'center', gap:12, padding:'0 1.25rem',
+          background:'linear-gradient(135deg,#1e40af,#1d4ed8)',
+          borderBottom:'2px solid rgba(96,165,250,0.5)',
+          boxShadow:'0 4px 20px rgba(0,0,0,0.4)',
+        }}>
+          <span style={{ color:'#93c5fd', fontWeight:700, fontSize:'0.8rem' }}>✏️ وضع تعديل الصفحة الرئيسية</span>
+          <span style={{ flex:1 }} />
+          <span style={{ color:'rgba(255,255,255,0.5)', fontSize:'0.7rem' }}>انقر على أي عنصر لتعديله</span>
+          <a href="/admin" style={{
+            padding:'5px 14px', borderRadius:7,
+            border:'1px solid rgba(255,255,255,0.25)',
+            background:'rgba(255,255,255,0.1)',
+            color:'#e2e8f0', fontSize:'0.78rem', fontWeight:600,
+            textDecoration:'none',
+          }}>← لوحة التحكم</a>
+        </div>
+      )}
       {showIntro && <IntroScreen onDone={handleIntroDone} />}
-      <div className="min-h-screen bg-white font-sans" dir={dir}>
-        <CmsPageSpacer />
+      <div className="min-h-screen bg-white font-sans" dir={dir}
+        style={cmsEditMode ? { paddingTop:44 } : undefined}>
         <Navbar />
 
         {/* ══ 1. HERO ══════════════════════════════════════════ */}
