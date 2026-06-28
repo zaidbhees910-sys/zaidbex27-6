@@ -138,11 +138,11 @@ export function HeroSection(_props: HeroProps) {
   const intervalRef    = useRef<ReturnType<typeof setInterval> | null>(null);
   const slideToRef     = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { dir } = useLanguage();
-  const { getBlock } = useCms();
+  const { getBlock, editMode } = useCms();
 
   useEffect(()=>{ const t=setTimeout(()=>setShow(true),80); return ()=>clearTimeout(t); },[]);
 
-  /* Auto-cycle every 5 s */
+  /* Auto-cycle every 5 s — paused in CMS edit mode so elements stay still */
   const startTimer = useCallback(() => {
     if (intervalRef.current) clearInterval(intervalRef.current);
     intervalRef.current = setInterval(() => {
@@ -155,12 +155,19 @@ export function HeroSection(_props: HeroProps) {
   }, []);
 
   useEffect(() => {
+    if (editMode) {
+      /* Stop cycling + ensure content is fully visible */
+      if (intervalRef.current) clearInterval(intervalRef.current);
+      if (slideToRef.current)  clearTimeout(slideToRef.current);
+      setSlideIn(true);
+      return;
+    }
     startTimer();
     return () => {
       if (intervalRef.current)  clearInterval(intervalRef.current);
       if (slideToRef.current)   clearTimeout(slideToRef.current);
     };
-  }, [startTimer]);
+  }, [startTimer, editMode]);
 
   const goToSlide = (i: number) => {
     if (i === slideIdx) return;
@@ -258,7 +265,7 @@ export function HeroSection(_props: HeroProps) {
                   blockKey={sk('image')}
                   defaultSrc={rawSlide.imageSrc}
                   alt={slide.badge}
-                  className="h-float"
+                  className={editMode ? '' : 'h-float'}
                   imgStyle={{
                     position:'relative', zIndex:1,
                     display:'block',
