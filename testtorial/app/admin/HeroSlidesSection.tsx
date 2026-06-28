@@ -197,15 +197,22 @@ export default function HeroSlidesSection() {
     setError('');
     try {
       for (const s of DEFAULT_SLIDES) {
-        await fetch('/api/hero-slides', {
+        const res = await fetch('/api/hero-slides', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(s),
         });
+        if (!res.ok) {
+          const d = await res.json().catch(() => ({}));
+          setError(`خطأ ${res.status}: ${(d as {error?:string}).error || 'فشل الإضافة'}`);
+          setSeeding(false);
+          return;
+        }
       }
       await fetchSlides();
-    } catch { setError('خطأ في إضافة الشرائح الافتراضية'); }
-    finally { setSeeding(false); }
+    } catch (e) {
+      setError(`خطأ في الاتصال: ${e instanceof Error ? e.message : 'unknown'}`);
+    } finally { setSeeding(false); }
   };
 
   const moveOrder = async (slide: HeroSlide, dir: -1 | 1) => {
