@@ -25,6 +25,65 @@ const EMPTY: Omit<HeroSlide, 'id' | 'sortOrder'> = {
   imageSrc: '', imgScale: 1.05, active: true,
 };
 
+const DEFAULT_SLIDES: Omit<HeroSlide, 'id' | 'sortOrder'>[] = [
+  {
+    badge:     'حلول الطباعة للشركات',
+    h1:        'حلول',
+    h1Grad:    'طباعة احترافية',
+    h1Sub:     'للشركات والمكاتب',
+    desc:      'أحبار BEC الأصلية وطابعات HP وCanon وBrother مع عقود توريد وصيانة مستمرة',
+    cta1Label: '🖨️ حلول الطباعة',
+    cta1Href:  '#printer-card',
+    cta2Label: '🎮 تجميع Gaming',
+    cta2Href:  '/gaming-build',
+    imageSrc:  '/assets/hero-slide-printing.png',
+    imgScale:  1.05,
+    active:    true,
+  },
+  {
+    badge:     'تجميعات Gaming احترافية',
+    h1:        'ابني',
+    h1Grad:    'جهازك المثالي',
+    h1Sub:     'بالمواصفات التي تريدها',
+    desc:      'تجميعات Gaming مخصصة، لابتوبات Lenovo Legion بأحدث المعالجات وكروت الشاشة',
+    cta1Label: '🎮 تجميع Gaming',
+    cta1Href:  '/gaming-build',
+    cta2Label: '📞 تواصل معنا',
+    cta2Href:  '#contact',
+    imageSrc:  '/assets/hero-slide-gaming.png',
+    imgScale:  1.05,
+    active:    true,
+  },
+  {
+    badge:     'أجهزة وإكسسوارات',
+    h1:        'أجهزة',
+    h1Grad:    'أصلية معتمدة',
+    h1Sub:     'للشركات والأفراد',
+    desc:      'لابتوبات، سماعات، ساعات ذكية وإكسسوارات من أفضل العلامات العالمية',
+    cta1Label: '💻 تصفح المنتجات',
+    cta1Href:  '/products',
+    cta2Label: '📞 تواصل معنا',
+    cta2Href:  '#contact',
+    imageSrc:  '/assets/hero-slide-devices.png',
+    imgScale:  1.05,
+    active:    true,
+  },
+  {
+    badge:     'الشبكات والدعم الفني',
+    h1:        'دعم',
+    h1Grad:    'فني متكامل',
+    h1Sub:     'للشركات والمؤسسات',
+    desc:      'إعداد شبكات، صيانة دورية، ودعم تقني متواصل يضمن استمرارية عملك',
+    cta1Label: '📞 تواصل معنا',
+    cta1Href:  '#contact',
+    cta2Label: '💼 خدماتنا',
+    cta2Href:  '#services',
+    imageSrc:  '/assets/hero-slide-network.png',
+    imgScale:  1.05,
+    active:    true,
+  },
+];
+
 export default function HeroSlidesSection() {
   const [open,       setOpen]       = useState(false);
   const [slides,     setSlides]     = useState<HeroSlide[]>([]);
@@ -36,6 +95,7 @@ export default function HeroSlidesSection() {
   const [uploading,  setUploading]  = useState(false);
   const [togglingId, setTogglingId] = useState<number | null>(null);
   const [deletingId, setDeletingId] = useState<number | null>(null);
+  const [seeding,    setSeeding]    = useState(false);
   const [error,      setError]      = useState('');
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -132,6 +192,22 @@ export default function HeroSlidesSection() {
     } finally { setDeletingId(null); }
   };
 
+  const seedDefaults = async () => {
+    setSeeding(true);
+    setError('');
+    try {
+      for (const s of DEFAULT_SLIDES) {
+        await fetch('/api/hero-slides', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(s),
+        });
+      }
+      await fetchSlides();
+    } catch { setError('خطأ في إضافة الشرائح الافتراضية'); }
+    finally { setSeeding(false); }
+  };
+
   const moveOrder = async (slide: HeroSlide, dir: -1 | 1) => {
     const idx     = slides.findIndex(s => s.id === slide.id);
     const partner = slides[idx + dir];
@@ -210,10 +286,17 @@ export default function HeroSlidesSection() {
           {loading ? (
             <div className="text-center py-10 text-gray-400 text-sm">جاري التحميل...</div>
           ) : slides.length === 0 ? (
-            <div className="text-center py-10 text-gray-400">
-              <div className="text-3xl mb-2">🎞️</div>
-              <p className="text-sm">لا توجد شرائح مضافة بعد</p>
-              <p className="text-xs mt-1">الشرائح الافتراضية تُعرض من الكود ما لم تضف شرائح هنا</p>
+            <div className="text-center py-10">
+              <div className="text-4xl mb-3">🎞️</div>
+              <p className="text-sm text-gray-500 mb-1">لا توجد شرائح في قاعدة البيانات</p>
+              <p className="text-xs text-gray-400 mb-5">الموقع يعرض الشرائح الافتراضية من الكود — أضفها هنا لتتمكن من تعديلها</p>
+              <button
+                onClick={seedDefaults}
+                disabled={seeding}
+                className={`inline-flex items-center gap-2 bg-violet-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-violet-700 transition ${seeding ? 'opacity-60 cursor-wait' : ''}`}
+              >
+                {seeding ? '⏳ جاري الإضافة...' : '✦ إضافة الشرائح الافتراضية (4 شرائح)'}
+              </button>
             </div>
           ) : (
             <div className="space-y-3">
